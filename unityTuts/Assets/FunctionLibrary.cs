@@ -39,17 +39,25 @@ public static class FunctionLibrary
     }
     public static float TestBench(float x, float z, float t)
     {
-        float r = Sqrt(Sin(t)*x * x - Cos(t)*z * z) ;
-        if (0.6 > r && 0.4 < r) return r;
+        //return (Lerp(x , z, Abs(Sin(t))) - Lerp(x, z, Abs(Tan(x+z+t))) -Sin(x-z));
+        //return (Lerp(x, z, Abs(Sin(t))) - Lerp(x, z, Abs(Tan(x + z + t))));
+        //return (Lerp(x, z, Abs(Sin(t))) - Lerp(x, z, Abs(Cos( z -x+ t))));
 
-        return Sin(x + z + t) - 0.5f;
+
+        //float r = Sqrt(Sin(t)*x * x - Cos(t)*z * z) ;
+        //if (0.6 > r && 0.4 < r) return r;
+        //return Sin(x + z + t) - 0.5f;
 
         //if (x == 0) x = 0.0001f;
         //if (z == 0) z = -0.0001f;
         //return -1/((Abs(x) + Abs(z)+ Abs(Cos(t))));
 
-       //return Cos(Abs(x ) - Abs(z) + PI * t);
-       
+        return Abs(Cos(0.5f*x - Abs(z) + PI * t));
+        return Abs(Cos(Abs(x) - Abs(z) + PI * t));
+
+        //return Cos(Abs(x ) - Abs(z) + PI * t);
+
+
     }
     //if selected invalid input
     public static float Fail(float x, float z, float t)
