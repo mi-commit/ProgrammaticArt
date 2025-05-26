@@ -15,8 +15,8 @@ Shader "Graph/Point surface"
             float3 worldPos;
          };
          void ConfigureSurface(Input input, inout SurfaceOutputStandard surface){
-			surface.Albedo.rb = saturate(input.worldPos.y * (0.51) - 0.49);
-            // surface.Albedo.rgb = saturate(input.worldPos.xyz * (0.5) + 0.5);
+			// surface.Albedo.rb = saturate(input.worldPos.y * (0.51) - 0.49);
+            surface.Albedo.rgb = saturate(input.worldPos.xyz * (0.5) + 0.5);
 
             // surface.Smoothness = saturate(input.worldPos.y);
          }
