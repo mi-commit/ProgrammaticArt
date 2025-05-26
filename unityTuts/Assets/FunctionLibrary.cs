@@ -7,8 +7,8 @@ public static class FunctionLibrary
     //so here we define functions that take in x, z, t and return a float
     public delegate Vector3 Function(float u, float v, float t);
 
-    static Function[] functions = { Wave, MultiWave, Ripple, TestBench };    //array of functions that we use
-    public enum FunctionName { Wave, MultiWave, Ripple, tests} //used for convenience in referring to specific functions
+    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere };    //array of functions that we use
+    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere} //used for convenience in referring to specific functions
 
     //returns selected function by name
     public static Function GetFunction(FunctionName name)
@@ -48,7 +48,16 @@ public static class FunctionLibrary
         return p;
 
     }
+    public static Vector3 Sphere(float u, float v, float t)
     {
+        float r = Cos(0.5f * PI * v + t + .5f*u);
+        Vector3 p = Vector3.zero;
+        p.x = r * Sin(PI * u);
+        p.y = v;
+        p.z = r * Cos(PI * u);
+
+        return p;
+    }
     public static Vector3 TestBench(float u, float v, float t)
     {
         Vector3 p;
@@ -72,6 +81,17 @@ public static class FunctionLibrary
 
         p.y = Cos(Abs(u ) - Abs(v) + PI * t);
 
+        //circle with vertical lines doing funky stuff
+        //p = Vector3.zero;
+        //p.x = Sin(PI * u);
+        //p.y = Sin(u) * Sin(v + 1) + Cos(u * t);
+        //p.z = Cos(PI * u);
+
+        //"sphre" like thing with a fun type of collapsing rotation and so on. on video
+        //float r = Cos(0.5f * PI * v + t + .5f * u);
+        //p.x = r * Sin(PI * u);
+        //p.y = v;
+        //p.z = r * Cos(PI * u);
 
         return p;
     }
