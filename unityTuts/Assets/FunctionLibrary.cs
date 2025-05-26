@@ -5,7 +5,7 @@ public static class FunctionLibrary
 {
     //delegate defines a kind of function to use as a reference
     //so here we define functions that take in x, z, t and return a float
-    public delegate float Function(float x, float z, float t);
+    public delegate Vector3 Function(float u, float v, float t);
 
     static Function[] functions = { Wave, MultiWave, Ripple, TestBench };    //array of functions that we use
     public enum FunctionName { Wave, MultiWave, Ripple, tests} //used for convenience in referring to specific functions
@@ -18,50 +18,66 @@ public static class FunctionLibrary
     }
 
     //returns a sine wave
-    public static float Wave(float x, float z, float t)
+    public static Vector3 Wave(float u, float v, float t)
     {
-        return Sin(PI * (x + z + t))/2f; //scaled for visuals
+        Vector3 p;
+        p.x = u; p.z = v;
+        p.y= Sin(PI * (u + v + t))/2f; //scaled for visuals
+        return p;
     }
     //multiple waves added together
-    public static float MultiWave(float x, float z, float t)
+    public static Vector3 MultiWave(float u, float v, float t)
     {
+        Vector3 p;
+        p.x = u; p.z = v;
         t = t / 2f;
-        float y = Sin(PI * (x + t));
-        y += Cos(2f * PI * (z + PI*t))*0.5f;
-        return 0.5f*y;
+        float y = Sin(PI * (u + t));
+        y += Cos(2f * PI * (v + PI*t))*0.5f;
+        p.y = 0.5f*y;
+        return p;
     }
     //returns a result based on sin of distance to center
-    public static float Ripple(float x,float z, float t)
+    public static Vector3 Ripple(float u, float v, float t)
     {
-        float d = Sqrt(x * x + z * z);
+        Vector3 p;
+        p.x = u; p.z = v;
+
+        float d = Sqrt(u * u + v * v);
         float y = Sin(PI * (4f * d - t));
-        return y / (1f + 10f * d);
+        p.y = y / (1f + 10f * d);
+        return p;
+
     }
-    public static float TestBench(float x, float z, float t)
     {
+    public static Vector3 TestBench(float u, float v, float t)
+    {
+        Vector3 p;
+        p.x = u; p.z = v;
+
         //return (Lerp(x , z, Abs(Sin(t))) - Lerp(x, z, Abs(Tan(x+z+t))) -Sin(x-z));
         //return (Lerp(x, z, Abs(Sin(t))) - Lerp(x, z, Abs(Tan(x + z + t))));
         //return (Lerp(x, z, Abs(Sin(t))) - Lerp(x, z, Abs(Cos( z -x+ t))));
 
 
         //float r = Sqrt(Sin(t)*x * x - Cos(t)*z * z) ;
-        //if (0.6 > r && 0.4 < r) return r;
-        //return Sin(x + z + t) - 0.5f;
+        //if (0.6 > r && 0.4 < r) p.y = r;
+        //p.y = Sin(x + z + t) - 0.5f;
 
-        //if (x == 0) x = 0.0001f;
-        //if (z == 0) z = -0.0001f;
-        //return -1/((Abs(x) + Abs(z)+ Abs(Cos(t))));
+        //if (u == 0) u = 0.0001f;
+        //if (v == 0) v = -0.0001f;
+        //p.y = -1/((Abs(u) + Abs(v)+ Abs(Cos(t))));
 
-        return Abs(Cos(0.5f*x - Abs(z) + PI * t));
-        return Abs(Cos(Abs(x) - Abs(z) + PI * t));
+        p.y = Abs(Cos(0.5f*u - Abs(v) + PI * t));
+        p.y =  Abs(Cos(Abs(u) - Abs(v) + PI * t));
 
-        //return Cos(Abs(x ) - Abs(z) + PI * t);
+        p.y = Cos(Abs(u ) - Abs(v) + PI * t);
 
 
+        return p;
     }
     //if selected invalid input
-    public static float Fail(float x, float z, float t)
+    public static Vector3 Fail(float u, float v, float t)
     {
-        return 0;
+        return new Vector3(u, v, 0);
     }
 }
