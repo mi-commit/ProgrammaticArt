@@ -3,22 +3,19 @@
 //coordinates are x-right y-up z-forwards
 //aligned to the canvas
 
-vec3 cosPalette (float t, vec3 a, vec3 b, vec3 c, vec3 d){
-    return a + b*cos( 6.28318*(c*t+d) );
 
-}
 // Cosine based palette, 4 vec3 params
+//by i quilez
 vec3 palette( in float t)
 {
-    vec3 a = vec3(.1, .1, .1);
-    vec3 b = vec3(-2 , -2 , .6);
-    vec3 c = normalize(vec3( .2,1,0));
+    vec3 a = vec3(.5, .5, .5);
+    vec3 b = vec3(.5,.5,.5);
+    vec3 c = vec3( .2,.5,0);
     vec3 d = vec3(1,0,1);
     return a + b*cos( 6.28318*(c*t+d) );
     //t, a, b, c, d
 }
-
-//smoothed minimum function
+//smoothed minimum function, also by i.quilez
 float smin (float a, float b, float t){
     float h = max(t - abs (a-b), 0.)/t;
     return min(a,b) - h*h*h*t*(1./6.);
@@ -35,15 +32,16 @@ float sd_Sphere(vec3 p, float s){
     return length(p) -s;
 }
 
+
+
 float map(vec3 p){
     //vec3 ufo_pos = vec3((iMouse.xy / iResolution.xy)*20.- 10.,sin(iTime));
-    
-    
-    vec3 ufo_pos = vec3(0,5,0);
+    vec3 q = p;
+    vec3 ufo_pos = vec3(0,-5,0);
     p.z +=tan(iTime)* 3.-5.;
     p.x -=5.;
     p.xz = mod(p.xz, 10.)-5.;
-    //p.y = mod(p.y, 3.)-1.5;
+    p.y = mod(p.y, 21.)-10.5;
     float torus = sdTorus(p-ufo_pos,vec2(1,.25 ));
 
     vec3 spherePos = p;
@@ -52,7 +50,7 @@ float map(vec3 p){
     
     float ufod = smin(sphere, torus, .2); // return distance from unit sphere
     
-    return min(ufod, 20.);
+    return min(ufod, q.y+3.);
 }
 
 
@@ -80,10 +78,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
         //optimization, just make sure we dont do too many iterations or anything;
         if (d < .01) break;
-        if ( d > 200.) break;
+        if ( distanceTravelled > 200.) break;
     }
     //distanceTravelled = min(distanceTravelled, 2000.);
     distanceTravelled *= .7;
+    color = vec3(distanceTravelled*.01 + .005*i);
     color = palette(distanceTravelled * .05 - i*0.05);
     fragColor = vec4(color, 1);
 }
