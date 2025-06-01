@@ -3,6 +3,17 @@
 //coordinates are x-right y-up z-forwards
 //aligned to the canvas
 
+// Cosine based palette, 4 vec3 params
+vec3 palette( in float t)
+{
+    vec3 a = vec3(0.75, .1, 1.);
+    vec3 b = vec3(3 , -2 , 2.9);
+    vec3 c = vec3( .2,1,0);
+    vec3 d = vec3(2,1,5);
+    return a + b*cos( 6.28318*(c*t+d) );
+    //t, a, b, c, d
+}
+
 //smoothed minimum function
 float smin (float a, float b, float t){
     float h = max(t - abs (a-b), 0.)/t;
@@ -51,18 +62,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
         float d = map(pos);
         distanceTravelled += d;
-
+        
         //optimization, just make sure we dont do too many iterations or anything
         //color = vec3(i) / 80.;
-        
         if (d < .01) break;
         if ( d > 50.) break;
-
     }
     
     
     //colorize
-    color = vec3(distanceTravelled * .05);
+    //color = vec3(distanceTravelled * .05);
+    color = palette(distanceTravelled * .05);
 
     fragColor = vec4(color, 1);
 }
