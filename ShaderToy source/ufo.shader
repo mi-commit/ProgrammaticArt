@@ -32,6 +32,12 @@ float sd_Sphere(vec3 p, float s){
     return length(p) -s;
 }
 
+float sdCone( vec3 p, vec2 c, float h )
+{
+  float q = length(p.xz);
+  return max(dot(c.xy,vec2(q,p.y)),-h-p.y);
+}
+
 
 float map(vec3 p){
     //vec3 ufo_pos = vec3((iMouse.xy / iResolution.xy)*20.- 10.,sin(iTime));
@@ -48,8 +54,9 @@ float map(vec3 p){
     vec3 spherePos = p;
     float sphere = sd_Sphere(p-ufo_pos, .7);
     
+    float c_dist = sdCone(p - vec3(0, -10, 0), vec2(.5,.05), .01);
     float ufod = smin(sphere, torus, .2); // return distance from unit sphere
-    return min(ufod, q.y+4. );
+    return min(ufod, smin(q.y+4., c_dist, .1));
 }
 
 
