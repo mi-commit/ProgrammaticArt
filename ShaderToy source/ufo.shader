@@ -12,7 +12,13 @@ vec3 palette( in float t)
     vec3 d = vec3(1,0,1);
     return a + b*cos(/*(.11) */6.28318*(c*t+d) );
 }
-
+vec3 grassPallette(in float t){
+     vec3 a = vec3(.1, .3, .1);
+    vec3 b = vec3(.3,.5,.4);
+    vec3 c = vec3( .2,.5,0);
+    vec3 d = vec3(0,1,1);
+    return a + b*cos(6.28318*(c*t+d) ); 
+}
 //SDF:S BY I.Quilez
 // *****************
 float sdTorus( vec3 p ,vec2 t )
@@ -33,14 +39,13 @@ float sdCone( vec3 p, vec2 c, float h )
 }
 //*****************************
 float ground(vec3 p){
-    float h = -p.y + fract(p.y);
+    float h = p.y - fract(p.y);
     
-
-
-    return h+5.;
+    h += fract(p.x*2.)*100.;
+    
+    return h+0.6;
+    //return p.y + 3.5;
 }
-
-
 
 float map(vec3 p){
     //Previous setup to control UFO with mouse, doenst work as good due to space repetition
@@ -66,9 +71,6 @@ float map(vec3 p){
     //q.y + 4 is the floor
     float g = ground(q);
     return min(ufod, min(g, c_dist));
-    
-    
-    
     
 }
 
@@ -98,10 +100,16 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         if (d < .01 || distanceTravelled > 200.) break;
     }
     //colorize
+    if(uv.y > 0. && distanceTravelled > 10.){
     color = palette(distanceTravelled * .035 - i*0.05)-.1;
+    }
+    else color = vec3(.5,0,.5) + distanceTravelled*.005;
+    
+    vec3 grassC = grassPallette(distanceTravelled * .035 - i*0.05 - uv.y* .5);
     //color = vec3(distanceTravelled*.01 + .005*i); // b&w version
-
-
+    color = mix( grassC,color, clamp(uv.y+.5,0.,1.));
+    
+    //color = vec3(uv.y+.5);
 
     fragColor = vec4(color, 1);
 }
