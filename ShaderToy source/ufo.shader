@@ -74,6 +74,15 @@ float map(vec3 p){
     
 }
 
+//--------------------------------------------------------------------------
+// Merge grass into the sky background for correct fog colouring...
+vec3 ApplyFog( in vec3  rgb, in float dis, float y)
+{
+	float fogAmount = clamp(dis*dis* 0.00003 * y, 0.0, 1.0);
+	return mix( rgb, vec3(.6,.41,.7), fogAmount );
+}
+
+//--------------------------------------------------------------------------
 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
@@ -106,10 +115,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     else color = vec3(.5,0,.5) + distanceTravelled*.005;
     
     vec3 grassC = grassPallette(distanceTravelled * .035 - i*0.05 - uv.y* .5);
+    
+    //"fog" approach from  https://www.shadertoy.com/view/Xsf3zX
+    //TODO alter implementation to combine these
+    //grassC = ApplyFog(grassC, distanceTravelled);
+    //color = ApplyFog(color, distanceTravelled);
+    
+    
+    
     //color = vec3(distanceTravelled*.01 + .005*i); // b&w version
     color = mix( grassC,color, clamp(uv.y+.5,0.,1.));
+    float tempH = clamp( .85 - abs(uv.y + .1),0.,2.);
+    color = ApplyFog(color, distanceTravelled, tempH);
     
-    //color = vec3(uv.y+.5);
-
+    fragColor = vec4(tempH);
     fragColor = vec4(color, 1);
 }
