@@ -7,8 +7,8 @@ public static class FunctionLibrary
     //so here we define functions that take in x, z, t and return a float
     public delegate Vector3 Function(float u, float v, float t);
 
-    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere };    //array of functions that we use
-    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere} //used for convenience in referring to specific functions
+    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere, Torus };    //array of functions that we use
+    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Torus} //used for convenience in referring to specific functions
 
     //returns selected function by name
     public static Function GetFunction(FunctionName name)
@@ -50,11 +50,24 @@ public static class FunctionLibrary
     }
     public static Vector3 Sphere(float u, float v, float t)
     {
-        float r = Cos(0.5f * PI * v);
+        float r = 0.9f + 0.1f * Sin(PI * (6f * u + 4f * v + t));
+        float s = r * Cos(PI *.5f * v);
         Vector3 p = Vector3.zero;
-        p.x = r * Sin(PI * u);
-        p.y = Sin(PI* 0.5f * v);
-        p.z = r * Cos(PI * u);
+        p.x = s * Sin(PI * u);
+        p.y = r * Sin(PI* 0.5f * v);
+        p.z = s * Cos(PI * u);
+
+        return p;
+    }
+    public static Vector3 Torus(float u, float v, float t)
+    {
+        float r = 1f;
+        float s = 0.5f + r * Cos(0.5f * PI * v);
+
+        Vector3 p = Vector3.zero;
+        p.x = s * Sin(PI * u);
+        p.y = r * Sin(PI * 0.5f * v);
+        p.z = s * Cos(PI * u);
 
         return p;
     }
@@ -76,16 +89,16 @@ public static class FunctionLibrary
         //if (v == 0) v = -0.0001f;
         //p.y = -1/((Abs(u) + Abs(v)+ Abs(Cos(t))));
 
-        p.y = Abs(Cos(0.5f*u - Abs(v) + PI * t));
-        p.y =  Abs(Cos(Abs(u) - Abs(v) + PI * t));
+        //p.y = Abs(Cos(0.5f*u - Abs(v) + PI * t));
+        //p.y =  Abs(Cos(Abs(u) - Abs(v) + PI * t));
 
-        p.y = Cos(Abs(u ) - Abs(v) + PI * t);
+        //p.y = Cos(Abs(u ) - Abs(v) + PI * t);
 
         //circle with vertical lines doing funky stuff
-        //p = Vector3.zero;
-        //p.x = Sin(PI * u);
-        //p.y = Sin(u) * Sin(v + 1) + Cos(u * t);
-        //p.z = Cos(PI * u);
+        p = Vector3.zero;
+        p.x = Sin(PI * u);
+        p.y = Sin(u) * Sin(v + 1) + Cos(u * t);
+        p.z = Cos(PI * u);
 
         //"sphre" like thing with a fun type of collapsing rotation and so on. on video
         //float r = Cos(0.5f * PI * v + t + .5f * u);
@@ -93,7 +106,7 @@ public static class FunctionLibrary
         //p.y = v;
         //p.z = r * Cos(PI * u);
 
-        return p;
+        return new Vector3(u,0,v);
     }
     //if selected invalid input
     public static Vector3 Fail(float u, float v, float t)
