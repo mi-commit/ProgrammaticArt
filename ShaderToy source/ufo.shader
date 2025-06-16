@@ -1,5 +1,8 @@
 #define FOV_CORRECT .5
 
+//intresting visuals i discovered while messing around with values
+//remove comment ("//" at start of line)to view
+ //#define secret1
 
 
 //colorpalette with a cosine function as developed by I. Quilez
@@ -37,14 +40,17 @@ float sdCone( vec3 p, vec2 c, float h )
   float q = length(p.xz);
   return max(dot(c.xy,vec2(q,p.y)),-h-p.y);
 }
-//*****************************
-float ground(vec3 p){
-    float h = p.y - fract(p.y);
+//***************************************************************************
+
+
+// started as an attempt to create a more dynamic ground than a simple plane, turned out quite intresting
+//looks kinda like a tall grass field blowing in the wind to me
+float grass(vec3 p){
+    //float h = p.y - fract(p.y);
+    float h=p.y;
+    h += fract(p.x*1.5)*100.; // the actual fun part
     
-    h += fract(p.x*2.)*100.;
-    
-    return h+0.6;
-    //return p.y + 3.5;
+    return h+ .6; // increase the distance enough to still have an intresting image
 }
 
 float map(vec3 p){
@@ -67,9 +73,10 @@ float map(vec3 p){
     float sphere = sd_Sphere(p-ufo_pos, .7);
     float c_dist = sdCone(p - vec3(0, -10, 0), vec2(.5,.05), .01);
     float ufod = min(sphere, torus); // return distance from unit sphere
-    
-    //q.y + 4 is the floor
-    float g = ground(q);
+    #ifdef secret1
+    q = p;
+    #endif
+    float g = grass(q);
     return min(ufod, min(g, c_dist));
     
 }
