@@ -16,6 +16,9 @@ public class Graph : MonoBehaviour
     [SerializeField]
     FunctionLibrary.FunctionName function;
 
+    [SerializeField, Min(0f)]
+    float functionDuration = 1f;
+
     //list of points
     Transform[] points;
 
@@ -38,7 +41,19 @@ public class Graph : MonoBehaviour
             point.SetParent(transform, false);
         }
     }
+    float currDuration;
     private void Update()
+    {
+        currDuration += Time.deltaTime;
+        if (currDuration > functionDuration)
+        {
+            function = FunctionLibrary.GetNextFunctionName(function);
+            currDuration -= functionDuration;
+        }
+            UpdateLoop();
+
+    }
+    private void UpdateLoop()
     {
         //get the function to visualize
         //i think this is why one should consider what they name things slightly further in advance

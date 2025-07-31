@@ -7,9 +7,12 @@ public static class FunctionLibrary
     //so here we define functions that take in x, z, t and return a float
     public delegate Vector3 Function(float u, float v, float t);
 
-    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere, Torus };    //array of functions that we use
-    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Torus} //used for convenience in referring to specific functions
-
+    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere, Star };    //array of functions that we use
+    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Star} //used for convenience in referring to specific functions
+    public static FunctionName GetNextFunctionName(FunctionName name)
+    {
+       return (int)name < functions.Length - 1 ? name + 1 : 0;
+    }
     //returns selected function by name
     public static Function GetFunction(FunctionName name)
     {
@@ -58,15 +61,17 @@ public static class FunctionLibrary
 
         return p;
     }
-    public static Vector3 Torus(float u, float v, float t)
-    {
-        float r = 1f;
-        float s = 0.5f + r * Cos(0.5f * PI * v);
 
+    public static Vector3 Star(float u, float v, float t)
+    {
         Vector3 p = Vector3.zero;
+        float r1 = 0.7f + 0.1f * Sin(PI * (6f * u + 0.5f * t));
+        float r2 = 0.15f + 0.05f * Sin(PI * (8f * u + 4f * v + 2f * t));
+        float s = r1 + r2 * Cos(PI * v) + Sin(t);
         p.x = s * Sin(PI * u);
-        p.y = r * Sin(PI * 0.5f * v);
+        p.y = r2 * Sin(PI * v);
         p.z = s * Cos(PI * u);
+
 
         return p;
     }
