@@ -105,7 +105,8 @@ float3 Tests(float u, float v, float t)
     float3 p = float3((u - v)*.5, 0., v*.5);
     p.y = sin(t % (u + 1) - v);
     
-    p = Star(p.x, t , p.y);
+    p = Star(p.x *t, t + p.z, p.y-t);
+    p.y *= 2;
     return p;
 }
 
