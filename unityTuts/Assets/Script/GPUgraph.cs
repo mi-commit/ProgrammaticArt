@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 
 public class GPUgraph : MonoBehaviour
 {
+
     //for the gpu to have as references to cube object
     [SerializeField]
     Material material;
@@ -20,10 +21,10 @@ public class GPUgraph : MonoBehaviour
                         resolutionId = Shader.PropertyToID("_Resolution"),
 		                stepId = Shader.PropertyToID("_Step"), // step between cubes
 		                timeId = Shader.PropertyToID("_Time");
-        
 
+    const int max_resolution = 1000;
     //points per side
-    [SerializeField, Range (5, 1000)]
+    [SerializeField, Range (5, max_resolution)]
     int resolution;
 
     //NOT CURRENTLY USED, from Graph.cs, eventually these will also be replaced to work on gpu
@@ -39,7 +40,8 @@ public class GPUgraph : MonoBehaviour
      void OnEnable()
     {
         //count is the total amount of cubes, "stride" or the size of each element is 3 3D positions, each taking 4 bytes, so 3*4
-        positionBuffer = new ComputeBuffer(resolution * resolution, 3*4);
+        //taking a constant 11.4 miB of gpu memory 
+        positionBuffer = new ComputeBuffer(max_resolution * max_resolution, 3*4);
     }
     private void Update()
     {
@@ -75,7 +77,7 @@ public class GPUgraph : MonoBehaviour
         var bounds = new Bounds(Vector3.zero, Vector3.one * (2.0f + 2.0f / resolution)); //based on points remaining within a cube of size 2, with some potentially reaching outside it by half a sizes 
 
         //draw call
-        Graphics.DrawMeshInstancedProcedural(mesh, 0, material,bounds, positionBuffer.count);
+        Graphics.DrawMeshInstancedProcedural(mesh, 0, material,bounds, resolution*resolution);
     }
 
 }
