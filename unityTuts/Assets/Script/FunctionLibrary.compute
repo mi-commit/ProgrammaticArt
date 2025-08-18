@@ -1,8 +1,8 @@
 #pragma kernel FunctionKernel
 #define PI 3.14159265358979323846
+//given upon dispatch
+
 RWStructuredBuffer<float3> _Positions;
-
-
 float _Step, _Time;
 uint _Resolution;
 
@@ -11,26 +11,33 @@ uint _Resolution;
 
 float2 GetUv(uint3 id)
 {
+    //simular to the logic in graph.cs, align calculated points to cube centers
     return (id.xy + 0.5) * _Step - 1.0;
 }
+
+
 void SetPosition(uint3 id, float3 position){
+    //check to make sure we only store valid indecies
+    //as someone not used to doing work on the gpu, just doing the math on invalid ID's and then just not doing anything with it feels wrong
+    //i know that on the gpu it should be Fine tm but regardless this feels wasteful lol
     if (id.x < _Resolution && id.y < _Resolution)
     {
-    _Positions[id.x + id.y * _Resolution] = position;
+        _Positions[id.x + id.y * _Resolution] = position;
     }
 }
 
+//just copied
 float3 Wave(float u, float v, float t)
 {
     float3 p;
-    p.x = u;
-    p.y = sin(PI * (u + v + t));
-    p.z = v;
+    p.x = u;  p.z = v;
+    p.y = sin(PI * (u + v + t))/2.0; //scaled for visuals
+    
     return p;
 }
 
-
-[numthreads(8,8,1)]
+//main kernel of the function
+[numthreads(8,8,1)] //defines amount of threads per group on execution
 void FunctionKernel(uint3 id:SV_DispatchThreadID)
 {
     float2 uv = GetUv(id);
