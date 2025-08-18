@@ -4,7 +4,6 @@ using UnityEngine.UIElements;
 
 public class GPUgraph : MonoBehaviour
 {
-
     //for the gpu to have as references to cube object
     [SerializeField]
     Material material;
@@ -27,9 +26,10 @@ public class GPUgraph : MonoBehaviour
     [SerializeField, Range (5, max_resolution)]
     int resolution;
 
-    //NOT CURRENTLY USED, from Graph.cs, eventually these will also be replaced to work on gpu
     [SerializeField]
     FunctionLibrary.FunctionName function;
+
+    //NOT CURRENTLY USED, from Graph.cs, eventually these will also be replaced to work on gpu
     [SerializeField, Min(0f)]
     float functionDuration = 1f;
     bool transitioning;
@@ -56,6 +56,7 @@ public class GPUgraph : MonoBehaviour
     }
     void UpdateFuncGPU()
     {
+        var KernelIndex = (int)function;
         //distance between cubes
         float step = 2f / resolution;
 
@@ -63,11 +64,11 @@ public class GPUgraph : MonoBehaviour
         cShader.SetInt(resolutionId, resolution);
         cShader.SetFloat(stepId, step);
         cShader.SetFloat (timeId, Time.time);
-        cShader.SetBuffer(0,positionsId,positionBuffer); //buffer also takes a kernel as argument
+        cShader.SetBuffer(KernelIndex, positionsId,positionBuffer); //buffer also takes a kernel as argument
 
         //function kernel takes fixed groups of 8 * 8, so we need to dispatch x/8 * y/8 times
         int groups = Mathf.CeilToInt(resolution / 8f);
-        cShader.Dispatch(0, groups, groups, 1); // dispatch to calcucate positions
+        cShader.Dispatch(KernelIndex, groups, groups, 1); // dispatch to calcucate positions
 
         //give material access to the now compute shadered values to draw from
         material.SetBuffer(positionsId, positionBuffer); 

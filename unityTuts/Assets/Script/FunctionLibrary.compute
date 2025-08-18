@@ -1,7 +1,21 @@
-#pragma kernel FunctionKernel
+#pragma kernel WaveKernel
+#pragma kernel MultiWaveKernel
+#pragma kernel RippleKernel
+#pragma kernel TestsKernel
+#pragma kernel SphereKernel
+#pragma kernel StarKernel
 #define PI 3.14159265358979323846
-//given upon dispatch
+//main kernel of the function
+#define KERNEL_FUNCTION(func) \
+[numthreads(8,8,1)] \
+void func##Kernel(uint3 id:SV_DispatchThreadID) \
+{\
+    float2 uv = GetUv(id);\
+    SetPosition(id, func(uv.x, uv.y, _Time));\
+}
 
+
+//given upon dispatch
 RWStructuredBuffer<float3> _Positions;
 float _Step, _Time;
 uint _Resolution;
@@ -25,8 +39,8 @@ void SetPosition(uint3 id, float3 position){
         _Positions[id.x + id.y * _Resolution] = position;
     }
 }
-
-//just copied
+//****************************************
+//COPIED FROM & DOCUMENTED IN FunctionLibrarly.cs
 float3 Wave(float u, float v, float t)
 {
     float3 p;
@@ -36,10 +50,74 @@ float3 Wave(float u, float v, float t)
     return p;
 }
 
-//main kernel of the function
-[numthreads(8,8,1)] //defines amount of threads per group on execution
-void FunctionKernel(uint3 id:SV_DispatchThreadID)
+float3 MultiWave(float u, float v, float t)
 {
-    float2 uv = GetUv(id);
-    SetPosition(id, Wave(uv.x, uv.y, _Time));
+    float3 p;
+    p.x = u;
+    p.z = v;
+    t = t / 2.;
+    float y = sin(PI * (u + t));
+    y += cos(2. * PI * (v + PI * t)) * 0.5;
+    p.y = 0.5 * y;
+    return p;
 }
+    //returns a result based on sin of distance to center
+float3 Ripple(float u, float v, float t)
+{
+    float3 p;
+    p.x = u;
+    p.z = v;
+
+    float d = sqrt(u * u + v * v);
+    float y = sin(PI * (4. * d - t));
+    p.y = y / (1. + 10. * d);
+    return p;
+
+}
+    float3 Sphere(float u, float v, float t)
+{
+    float3 p = 0.;
+
+    float r = cos(0.5 * PI * v);
+    p.x = r * sin(PI * u);
+    p.y = sin(PI * 0.5 * v);
+    p.z = r * cos(PI * u);
+
+    return p;
+}
+
+
+    float3 Star(float u, float v, float t)
+{
+    float3 p = 0.;
+    float r1 = 0.7f + 0.1f * sin(PI * (6 * u + 0.5 * t));
+    float r2 = 0.15 + 0.05 * sin(PI * (8. * u + 4. * v + 2. * t));
+    float s = r1 + r2 * cos(PI * v) + sin(t);
+    p.x = s * sin(PI * u);
+    p.y = r2 * sin(PI * v);
+    p.z = s * cos(PI * u);
+
+
+    return p;
+}
+float3 Tests(float u, float v, float t)
+{
+    float3 p = float3(u, 0.,v);
+
+    return p;
+}
+
+
+
+
+
+//end of functions with c# equivalents ready
+//*******************************************************************
+KERNEL_FUNCTION(Wave)
+KERNEL_FUNCTION(MultiWave)
+KERNEL_FUNCTION(Ripple)
+KERNEL_FUNCTION(Tests)
+KERNEL_FUNCTION(Sphere)
+KERNEL_FUNCTION(Star)
+
+
