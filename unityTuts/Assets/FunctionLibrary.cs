@@ -8,7 +8,7 @@ public static class FunctionLibrary
     public delegate Vector3 Function(float u, float v, float t);
 
     static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere, Star };    //array of functions that we use
-    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Star} //used for convenience in referring to specific functions
+    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Star, MetsanPeitto} //used for convenience in referring to specific functions
     public static FunctionName GetNextFunctionName(FunctionName name)
     {
        return (int)name < functions.Length - 1 ? name + 1 : 0;

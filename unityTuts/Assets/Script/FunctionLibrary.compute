@@ -4,6 +4,8 @@
 #pragma kernel TestsKernel
 #pragma kernel SphereKernel
 #pragma kernel StarKernel
+#pragma kernel MetsanPeittoKernel
+
 #define PI 3.14159265358979323846
 //main kernel of the function
 #define KERNEL_FUNCTION(func) \
@@ -110,7 +112,11 @@ float3 Tests(float u, float v, float t)
     return p;
 }
 
-
+float3 MetsanPeitto(float u, float v, float t)
+{
+    float3 p = float3(sin(u), 0, u / v);
+    return p;
+}
 
 
 
@@ -122,5 +128,6 @@ KERNEL_FUNCTION(Ripple)
 KERNEL_FUNCTION(Tests)
 KERNEL_FUNCTION(Sphere)
 KERNEL_FUNCTION(Star)
+KERNEL_FUNCTION(MetsanPeitto)
 
 
