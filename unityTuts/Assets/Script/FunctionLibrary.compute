@@ -112,9 +112,56 @@ float3 Tests(float u, float v, float t)
     return p;
 }
 
+float2 CircleMeMf(float r, float t)
+{
+    float2 spot = 0;
+    spot.x = cos(PI * r);
+    spot.y = sin(PI * r);
+
+    //************* MATRIX WIZARDRY ******************
+    // i dont quite get how this works, like i know that multiplying a vector by a matrix
+    // with cosines and sines of a given angle like below gets a rotation, but i have absolutely
+    // no idea WHY thats a thing
+    //i looked up rotating vector with matrix and with wikipedia by my side i managed to create this
+    //apparently matricies are a part of the discrete maths course im starting next week so i hope that explains things
+    //i've got a bad feeling that most of what im doing in this function could just be a single matrix tbh
+    
+    float c = cos(t);
+    float s = sin(t);
+    spot = mul(spot, float2x2(c, -s, s, c));
+
+    
+    
+    return spot;
+}
+
 float3 MetsanPeitto(float u, float v, float t)
 {
-    float3 p = float3(sin(u), 0, u / v);
+    float3 p =0;
+    t *= .1;
+    p.x = (v * v - t ) % 1;
+    p.y = .7*tan(1+p.x);
+    t *= .000001;
+    //p.x -=p.y;
+    p.xz = CircleMeMf(p.x, frac(u)*2*PI) * p.y*10;
+    
+    p.y = tan(p.y*2-1);
+    
+    
+    
+    //p.y = 1-(p.x * p.x * p.x);
+    
+    
+    //t = (t % 10)+10;
+    //t *= .1;
+    
+    //float3 p;
+    //float r = (cos(v + t)+1) % 1;
+    //p.x = r * sin(PI * u);
+    //p.z = r * cos(PI * u);
+    //p.y = length(-p.xz);
+    ////p.xz = p.xz * 10;
+    ////p.y = sin(u*r);
     return p;
 }
 

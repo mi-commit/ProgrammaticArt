@@ -45,7 +45,7 @@ Shader "Graph/Point surface GPU"
             //0   0   0   p   
             //0   0   0   p   
 
-            unity_ObjectToWorld._m00_m11_m22 = _Step*3;
+            unity_ObjectToWorld._m00_m11_m22 = _Step;
             //unity_ObjectToWorld._m11= _Step*2.;
             //s   0   0   p   
             //0   s   0   p   
