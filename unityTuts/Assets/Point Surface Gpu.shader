@@ -45,7 +45,7 @@ Shader "Graph/Point surface GPU"
             //0   0   0   p   
             //0   0   0   p   
 
-            unity_ObjectToWorld._m00_m11_m22 = _Step;
+            unity_ObjectToWorld._m00_m11_m22 = _Step*.4;
             //unity_ObjectToWorld._m11= _Step*2.;
             //s   0   0   p   
             //0   s   0   p   
@@ -57,8 +57,8 @@ Shader "Graph/Point surface GPU"
          void ConfigureSurface(Input input, inout SurfaceOutputStandard surface){
             //same surface things as before 
 
-			surface.Albedo.rb = saturate(-input.worldPos.y * (0.51));
-            //surface.Albedo.rgb = saturate(input.worldPos.xyz * (0.5) + 0.5);
+			// surface.Albedo.rb = saturate(-input.worldPos.y * (0.51));
+            surface.Albedo.rgb = 3*saturate(input.worldPos.xyz * (0.5) + 0.5);
 
             // surface.Smoothness = saturate(input.worldPos.y);
          }

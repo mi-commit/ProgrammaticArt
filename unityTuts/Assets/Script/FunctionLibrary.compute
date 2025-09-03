@@ -115,7 +115,7 @@ float3 Tests(float u, float v, float t)
 float2 CircleMeMf(float r, float t)
 {
     float2 spot = 0;
-    spot.x = cos(PI * r);
+    spot.x = cos(PI * r*2);
     spot.y = sin(PI * r);
 
     //************* MATRIX WIZARDRY ******************
@@ -126,7 +126,7 @@ float2 CircleMeMf(float r, float t)
     //apparently matricies are a part of the discrete maths course im starting next week so i hope that explains things
     //i've got a bad feeling that most of what im doing in this function could just be a single matrix tbh
     
-    float c = cos(t);
+    float c = cos(t + frac(t));
     float s = sin(t);
     spot = mul(spot, float2x2(c, -s, s, c));
 
@@ -137,15 +137,16 @@ float2 CircleMeMf(float r, float t)
 
 float3 MetsanPeitto(float u, float v, float t)
 {
+    float2 offsets = (u*.5, v*.1);
     float3 p =0;
-    t *= .1;
+    t *= .01;
     p.x = (v * v - t ) % 1;
     p.y = .7*tan(1+p.x);
     t *= .000001;
     //p.x -=p.y;
-    p.xz = CircleMeMf(p.x, frac(u)*2*PI) * p.y*10;
+    p.xz = CircleMeMf(p.x + 10*frac(sin(offsets.y*.1)), frac(u) * 2 * PI) * p.y * 10;
     
-    p.y = tan(p.y*2-1);
+    p.y = tan(p.y * 2 - 1) - offsets.x;
     
     
     
@@ -162,7 +163,7 @@ float3 MetsanPeitto(float u, float v, float t)
     //p.y = length(-p.xz);
     ////p.xz = p.xz * 10;
     ////p.y = sin(u*r);
-    return p;
+    return p*.2;
 }
 
 
