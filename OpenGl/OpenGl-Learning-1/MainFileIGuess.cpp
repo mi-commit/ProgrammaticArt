@@ -6,7 +6,7 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
+void processInput(GLFWwindow* window);
 
 int main() {
 	glfwInit();
@@ -15,12 +15,19 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWwindow* window = glfwCreateWindow(800, 800, "TEST", NULL, NULL);
+	GLFWwindow* spamWindows[10];
+	for (int i = 0; i < 10; i++) {
+		spamWindows[i] = glfwCreateWindow(100, 20, "FUCK", NULL, NULL);
+	}
+
+
 
 	if (window == NULL) {
 		std::cout << "Failed Creating Window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
+
 	glfwMakeContextCurrent(window);
 
 	//initializing glad
@@ -32,17 +39,33 @@ int main() {
 	}
 	//called every time user resizes window, so that things function still yay
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	for (int i = 0; i < 10; i++) {
+		glfwSetFramebufferSizeCallback(spamWindows[i], framebuffer_size_callback);
+	}
+	
 
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);
+		for (int i = 0; i < 10; i++) {
+			glfwSwapBuffers(window);
+		}
 		glfwPollEvents();
+		processInput(window); 
 	}
 
 
 	glfwTerminate();
 	return 0;
 }
+void processInput(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
+}
+
+
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	std::cout << "WIDTH: " << width << " HEIGHT: " << height << std::endl;
