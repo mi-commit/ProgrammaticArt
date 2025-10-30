@@ -7,7 +7,30 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-const int WINDOWCOUNT = 500;
+
+
+
+float vertices[] = {
+	-.5, -0.5, 0,
+	0.5, -0.5, 0,
+	0.0,  0.5, 0
+};
+
+const char* vertexShaderSource = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
+
+const char* fragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\0";
+
+
 
 int main() {
 	glfwInit();
@@ -15,15 +38,10 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* spamWindows[WINDOWCOUNT];
-	for (int i = 0; i < WINDOWCOUNT; i++) {
-		spamWindows[i] = glfwCreateWindow(200, 50, "FUCK", NULL, NULL);
-		glfwSetWindowPos(spamWindows[i], i+200,200+sqrt( 50 + (i-4)^2));
-	}
 
 	GLFWwindow* window = glfwCreateWindow(800, 800, "TEST", NULL, NULL);
 
-
+	
 
 	if (window == NULL) {
 		std::cout << "Failed Creating Window" << std::endl;
@@ -43,19 +61,85 @@ int main() {
 
 	//called every time user resizes window, so that things function still yay
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	for (int i = 0; i < WINDOWCOUNT; i++) {
-		glfwSetFramebufferSizeCallback(spamWindows[i], framebuffer_size_callback);
-	}
+
+	//get a vertex buffer object
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//copyy vertex data to buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+	//create vertex shader
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	 
+	//compile
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
 	
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+
+
+	//verify compiles successfull
+	int success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" <<
+			infoLog << std::endl;
+	}
+	int success2;
+	char infoLog2[512];
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success2);
+	if (!success2) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog2);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" <<
+			infoLog2 << std::endl;
+	}
+	unsigned int shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	
+	glDeleteShader(vertexShader); glDeleteShader(vertexShader);
+
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+	// 1. bind Vertex Array Object
+	glBindVertexArray(VAO);
+	// 2. copy our vertices array in a buffer for OpenGL to use
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 3. then set our vertex attributes pointers
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+		(void*)0);
+	glEnableVertexAttribArray(0);
+
+
+
+
 
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
-		glfwSwapBuffers(window);
-		for (int i = 0; i < WINDOWCOUNT; i++) {
-			glfwSwapBuffers(window);
-		}
-		glfwPollEvents();
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f),
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		processInput(window); 
+
+
+
+		glfwPollEvents();
+		glfwSwapBuffers(window);
 	}
 
 
@@ -72,6 +156,7 @@ void processInput(GLFWwindow* window) {
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	std::cout << "WIDTH: " << width << " HEIGHT: " << height << std::endl;
-	glViewport(0, 0, width, height);
+	int size = width < height ? width : height;
+	std::cout << "WIDTH: " << width << " HEIGHT: " << height << " SIZE: "<< size << std::endl;
+	glViewport(0, 0, size, size);
 }
