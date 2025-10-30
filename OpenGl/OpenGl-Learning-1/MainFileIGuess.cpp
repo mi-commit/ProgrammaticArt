@@ -7,6 +7,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+const int WINDOWCOUNT = 500;
 
 int main() {
 	glfwInit();
@@ -14,11 +15,13 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 800, "TEST", NULL, NULL);
-	GLFWwindow* spamWindows[10];
-	for (int i = 0; i < 10; i++) {
-		spamWindows[i] = glfwCreateWindow(100, 20, "FUCK", NULL, NULL);
+	GLFWwindow* spamWindows[WINDOWCOUNT];
+	for (int i = 0; i < WINDOWCOUNT; i++) {
+		spamWindows[i] = glfwCreateWindow(200, 50, "FUCK", NULL, NULL);
+		glfwSetWindowPos(spamWindows[i], i+200,200+sqrt( 50 + (i-4)^2));
 	}
+
+	GLFWwindow* window = glfwCreateWindow(800, 800, "TEST", NULL, NULL);
 
 
 
@@ -37,9 +40,10 @@ int main() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+
 	//called every time user resizes window, so that things function still yay
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < WINDOWCOUNT; i++) {
 		glfwSetFramebufferSizeCallback(spamWindows[i], framebuffer_size_callback);
 	}
 	
@@ -47,7 +51,7 @@ int main() {
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < WINDOWCOUNT; i++) {
 			glfwSwapBuffers(window);
 		}
 		glfwPollEvents();
