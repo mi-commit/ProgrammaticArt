@@ -18,8 +18,10 @@ public class GPUgraph : MonoBehaviour
     //used to set properties for compute shader
     static readonly int positionsId = Shader.PropertyToID("_Positions"),    //starting cube positions id, for the buffer
                         resolutionId = Shader.PropertyToID("_Resolution"),
+                        transitionProgressId = Shader.PropertyToID("_TransitionProgress"),
 		                stepId = Shader.PropertyToID("_Step"), // step between cubes
 		                timeId = Shader.PropertyToID("_Time");
+        
 
     const int max_resolution = 1000;
     //points per side
@@ -28,14 +30,20 @@ public class GPUgraph : MonoBehaviour
 
     [SerializeField]
     FunctionLibrary.FunctionName function;
+    [SerializeField]
+    FunctionLibrary.FunctionName transFunction;
 
     //NOT CURRENTLY USED, from Graph.cs, eventually these will also be replaced to work on gpu
     [SerializeField, Min(0f)]
-    float functionDuration = 1f;
-    bool transitioning;
-    FunctionLibrary.FunctionName transFunction;
+    float functionDuration = 1f,  transitionDuration = 1f;
+
     float currDuration;
+
+    public bool transitioning;
+
     //END OF UNUSED
+
+
 
      void OnEnable()
     {
@@ -45,6 +53,23 @@ public class GPUgraph : MonoBehaviour
     }
     private void Update()
     {
+        currDuration += Time.deltaTime;
+        if (transitioning)
+        {
+            if (currDuration >= transitionDuration)
+            {
+                currDuration -= transitionDuration;
+                transitioning = false;
+            }
+        }
+        else if (currDuration >= functionDuration)
+        {
+            currDuration -= functionDuration;
+            transitioning = true;
+            transFunction = function;
+            function = FunctionLibrary.GetRandomFunctionNameOtherThan(function);
+        }
+
         UpdateFuncGPU();
     }
     private void OnDisable()
@@ -56,7 +81,7 @@ public class GPUgraph : MonoBehaviour
     }
     void UpdateFuncGPU()
     {
-        var KernelIndex = (int)function;
+        var KernelIndex = (int)function + (int)(transitioning ? transFunction : function) * FunctionLibrary.FunctionCount;
         //distance between cubes
         float step = 2f / resolution;
 
@@ -65,6 +90,13 @@ public class GPUgraph : MonoBehaviour
         cShader.SetFloat(stepId, step);
         cShader.SetFloat (timeId, Time.time);
         cShader.SetBuffer(KernelIndex, positionsId,positionBuffer); //buffer also takes a kernel as argument
+        if (transitioning)
+        {
+            cShader.SetFloat(transitionProgressId,
+            Mathf.SmoothStep(0, 1, currDuration / functionDuration));
+        }
+
+
 
         //function kernel takes fixed groups of 8 * 8, so we need to dispatch x/8 * y/8 times
         int groups = Mathf.CeilToInt(resolution / 8f);

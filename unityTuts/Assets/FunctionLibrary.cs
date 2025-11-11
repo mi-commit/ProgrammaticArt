@@ -7,12 +7,21 @@ public static class FunctionLibrary
     //so here we define functions that take in x, z, t and return a float
     public delegate Vector3 Function(float u, float v, float t);
 
-    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere, Star };    //array of functions that we use
-    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Star, MetsanPeitto} //used for convenience in referring to specific functions
+    static Function[] functions = { Wave, MultiWave, Ripple, TestBench, Sphere, Star, MetsanPeitto };    //array of functions that we use
+    public enum FunctionName { Wave, MultiWave, Ripple, tests, Sphere, Star, MetsanPeitto } //used for convenience in referring to specific functions
+    public static int FunctionCount => functions.Length;
+
     public static FunctionName GetNextFunctionName(FunctionName name)
     {
-       return (int)name < functions.Length - 1 ? name + 1 : 0;
+        return (int)name < functions.Length - 1 ? name + 1 : 0;
     }
+
+    public static FunctionName GetRandomFunctionNameOtherThan(FunctionName name)
+    {
+        var choice = (FunctionName)Random.Range(1, functions.Length);
+        return choice == name ? 0 : choice;
+    }
+
     //returns selected function by name
     public static Function GetFunction(FunctionName name)
     {
@@ -117,4 +126,9 @@ public static class FunctionLibrary
     {
         return new Vector3(u, v, 0);
     }
+    public static Vector3 MetsanPeitto(float u, float v, float t)
+    {
+        return Vector3.zero;
+    }
+
 }

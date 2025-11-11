@@ -169,7 +169,10 @@ MonoBehaviour:
   cShader: {fileID: 7200000, guid: 49ca9d3d99e16f54595eea18b19c9811, type: 3}
   resolution: 483
   function: 3
-  functionDuration: 1
+  transFunction: 0
+  functionDuration: 10
+  transitionDuration: 5
+  transitioning: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

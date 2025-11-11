@@ -1,5 +1,4 @@
 #pragma kernel WaveKernel
-#pragma kernel WaveToWaveKernel
 #pragma kernel WaveToMultiWaveKernel
 #pragma kernel WaveToRippleKernel
 #pragma kernel WaveToTestsKernel
@@ -8,11 +7,52 @@
 #pragma kernel WaveToMetsanPeittoKernel
 
 //AND NOW TO DO THE SAME GODDAMN THING SEVEN MORE TIMES IM SO DONE
+#pragma kernel MultiWaveToWaveKernel
 #pragma kernel MultiWaveKernel
+#pragma kernel MultiWaveToRippleKernel
+#pragma kernel MultiWaveToTestsKernel
+#pragma kernel MultiWaveToSphereKernel
+#pragma kernel MultiWaveToStarKernel
+#pragma kernel MultiWaveToMetsanPeittoKernel
+
+#pragma kernel RippleToWaveKernel
+#pragma kernel RippleToMultiWaveKernel
 #pragma kernel RippleKernel
+#pragma kernel RippleToTestsKernel
+#pragma kernel RippleToSphereKernel
+#pragma kernel RippleToStarKernel
+#pragma kernel RippleToMetsanPeittoKernel
+
+#pragma kernel TestsToWaveKernel
+#pragma kernel TestsToMultiWaveKernel
+#pragma kernel TestsToRippleKernel
 #pragma kernel TestsKernel
+#pragma kernel TestsToSphereKernel
+#pragma kernel TestsToStarKernel
+#pragma kernel TestsToMetsanPeittoKernel
+
+#pragma kernel SphereToWaveKernel
+#pragma kernel SphereToMultiWaveKernel
+#pragma kernel SphereToRippleKernel
+#pragma kernel SphereToTestsKernel
 #pragma kernel SphereKernel
+#pragma kernel SphereToStarKernel
+#pragma kernel SphereToMetsanPeittoKernel
+
+#pragma kernel StarToWaveKernel
+#pragma kernel StarToMultiWaveKernel
+#pragma kernel StarToRippleKernel
+#pragma kernel StarToTestsKernel
+#pragma kernel StarToSphereKernel
 #pragma kernel StarKernel
+#pragma kernel StarToMetsanPeittoKernel
+
+#pragma kernel MetsanPeittoToWaveKernel
+#pragma kernel MetsanPeittoToMultiWaveKernel
+#pragma kernel MetsanPeittoToRippleKernel
+#pragma kernel MetsanPeittoToTestsKernel
+#pragma kernel MetsanPeittoToSphereKernel
+#pragma kernel MetsanPeittoToStarKernel
 #pragma kernel MetsanPeittoKernel
 
 
