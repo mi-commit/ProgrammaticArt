@@ -1,10 +1,24 @@
 #pragma kernel WaveKernel
+#pragma kernel WaveToWaveKernel
+#pragma kernel WaveToMultiWaveKernel
+#pragma kernel WaveToRippleKernel
+#pragma kernel WaveToTestsKernel
+#pragma kernel WaveToSphereKernel
+#pragma kernel WaveToStarKernel
+#pragma kernel WaveToMetsanPeittoKernel
+
+//AND NOW TO DO THE SAME GODDAMN THING SEVEN MORE TIMES IM SO DONE
 #pragma kernel MultiWaveKernel
 #pragma kernel RippleKernel
 #pragma kernel TestsKernel
 #pragma kernel SphereKernel
 #pragma kernel StarKernel
 #pragma kernel MetsanPeittoKernel
+
+
+
+
+
 
 #define PI 3.14159265358979323846
 //main kernel of the function
@@ -16,10 +30,20 @@ void func##Kernel(uint3 id:SV_DispatchThreadID) \
     SetPosition(id, func(uv.x, uv.y, _Time));\
 }
 
+#define KERNEL_MORPH_FUNCTION(functionA,functionB)\
+[numthreads(8,8,1)]\
+void functionA##To##functionB##Kernel(uint3 id: SV_DispatchThreadId){\
+    float2 uv = GetUv(id);\
+    float3 position = lerp(\
+        functionA(uv.x, uv.y, _Time), functionB(uv.x, uv.y, _Time), _TransitionProgress);\
+    SetPosition(id, position);\
+}
+
+
 
 //given upon dispatch
 RWStructuredBuffer<float3> _Positions;
-float _Step, _Time;
+float _Step, _Time, _TransitionProgress;
 uint _Resolution;
 
 
@@ -179,3 +203,53 @@ KERNEL_FUNCTION(Star)
 KERNEL_FUNCTION(MetsanPeitto)
 
 
+KERNEL_MORPH_FUNCTION(Wave, MultiWave);
+KERNEL_MORPH_FUNCTION(Wave, Ripple);
+KERNEL_MORPH_FUNCTION(Wave, Sphere);
+KERNEL_MORPH_FUNCTION(Wave, Tests);
+KERNEL_MORPH_FUNCTION(Wave, Star);
+KERNEL_MORPH_FUNCTION(Wave, MetsanPeitto);
+
+
+KERNEL_MORPH_FUNCTION(MultiWave, Wave);
+KERNEL_MORPH_FUNCTION(MultiWave, Ripple);
+KERNEL_MORPH_FUNCTION(MultiWave, Sphere);
+KERNEL_MORPH_FUNCTION(MultiWave, Tests);
+KERNEL_MORPH_FUNCTION(MultiWave, Star);
+KERNEL_MORPH_FUNCTION(MultiWave, MetsanPeitto);
+
+
+KERNEL_MORPH_FUNCTION(Ripple, Wave);
+KERNEL_MORPH_FUNCTION(Ripple, MultiWave);
+KERNEL_MORPH_FUNCTION(Ripple, Sphere);
+KERNEL_MORPH_FUNCTION(Ripple, Tests);
+KERNEL_MORPH_FUNCTION(Ripple, Star);
+KERNEL_MORPH_FUNCTION(Ripple, MetsanPeitto);
+
+KERNEL_MORPH_FUNCTION(Tests, Wave);
+KERNEL_MORPH_FUNCTION(Tests, MultiWave);
+KERNEL_MORPH_FUNCTION(Tests, Ripple);
+KERNEL_MORPH_FUNCTION(Tests, Sphere);
+KERNEL_MORPH_FUNCTION(Tests, Star);
+KERNEL_MORPH_FUNCTION(Tests, MetsanPeitto);
+
+KERNEL_MORPH_FUNCTION(Sphere, Wave);
+KERNEL_MORPH_FUNCTION(Sphere, MultiWave);
+KERNEL_MORPH_FUNCTION(Sphere, Ripple);
+KERNEL_MORPH_FUNCTION(Sphere, Tests);
+KERNEL_MORPH_FUNCTION(Sphere, Star);
+KERNEL_MORPH_FUNCTION(Sphere, MetsanPeitto);
+
+KERNEL_MORPH_FUNCTION(Star, Wave);
+KERNEL_MORPH_FUNCTION(Star, MultiWave);
+KERNEL_MORPH_FUNCTION(Star, Ripple);
+KERNEL_MORPH_FUNCTION(Star, Sphere);
+KERNEL_MORPH_FUNCTION(Star, Tests);
+KERNEL_MORPH_FUNCTION(Star, MetsanPeitto);
+
+KERNEL_MORPH_FUNCTION(MetsanPeitto, Wave);
+KERNEL_MORPH_FUNCTION(MetsanPeitto, MultiWave);
+KERNEL_MORPH_FUNCTION(MetsanPeitto, Ripple);
+KERNEL_MORPH_FUNCTION(MetsanPeitto, Sphere);
+KERNEL_MORPH_FUNCTION(MetsanPeitto, Tests);
+KERNEL_MORPH_FUNCTION(MetsanPeitto, Star);
