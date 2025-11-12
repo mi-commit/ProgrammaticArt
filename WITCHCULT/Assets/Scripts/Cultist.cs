@@ -1,8 +1,7 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
-using UnityEditor;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 public class Cultist : MonoBehaviour
 {
@@ -21,16 +20,34 @@ public class Cultist : MonoBehaviour
     {
         bodyparts.Add(Spine.AddComponent<Bodypart>());
         bodyparts.Add(ShoulderL.AddComponent<Bodypart>());
-        bodyparts.Add(Head.AddComponent<Bodypart>());
         bodyparts.Add(ShoulderR.AddComponent<Bodypart>());
+        bodyparts.Add(Head.AddComponent<Bodypart>());
 
-        bodyparts[(int)PartIds.Spine].SetTargetRotation(Quaternion.identity, 2);
-        foreach(var part in bodyparts)
+        foreach (var part in bodyparts)
         {
-            part.StartCoroutine(part.RandomCycle(new Vector3(10,10,10)));
+            part.StartCoroutine(part.RandomCycle(new Vector3(10, 10, 10)));
         }
-
     }
+    public void LookAt(Transform location, float turnTime = 1, float RemainTime =5, bool stopMovement = false)
+    {
+        if (stopMovement)
+        {
+            foreach (var part in bodyparts)
+            {
+                part.StopAllCoroutines();
+                part.SetTargetRotation(part.DefaultRotation, turnTime);
+                part.StartCoroutine(part.RandomCycle(new Vector3(10, 10, 10), RemainTime));
+            }
+        }
+        else
+        {
+            bodyparts[(int)PartIds.Head].StopAllCoroutines();
+            bodyparts[(int)PartIds.Head].StartCoroutine(bodyparts[(int)PartIds.Head].RandomCycle(new Vector3(10, 10, 10), RemainTime));
+
+        }
+        bodyparts[(int)PartIds.Head].LookTowards(location.position, turnTime);
+    }
+
 
     float TickTime = .05f;
     float time = 0;
@@ -64,7 +81,7 @@ public class Bodypart : MonoBehaviour
     {
         progress += delta_time;
         if (progress >= MovementDuration) return;
-        transform.localRotation = Quaternion.SlerpUnclamped(transform.localRotation, TargetRotation, progress / MovementDuration);
+        transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, TargetRotation, progress / MovementDuration);
     }
     public void SetTargetRotation(Quaternion _TargetRoation, float _MovementDuration)
     {
@@ -72,21 +89,25 @@ public class Bodypart : MonoBehaviour
         MovementDuration = _MovementDuration;
         progress = 0;
     }
+    public void LookTowards(Vector3 position, float time)
+    {
+        SetTargetRotation(Quaternion.LookRotation(position - transform.position), time);
+    }
 
     public void Awake()
     {
-        Debug.Log("Awake");
-        DefaultRotation = transform.localRotation;
-        TargetRotation = transform.localRotation;
+        DefaultRotation = transform.rotation;
+        TargetRotation = transform.rotation;
     }
 
-    public IEnumerator RandomCycle(Vector3 Range)
+    public IEnumerator RandomCycle(Vector3 Range, float Wait = 1)
     {
         while (true)
         {
-            yield return new WaitForSeconds(MovementDuration - progress + Random.Range(1f,3f));
-            Vector3 v = new Vector3(Random.Range(-Range.x,Range.x), Random.Range(-Range.y, Range.y), Random.Range(Range.z, Range.z));
-            SetTargetRotation(Quaternion.Euler(DefaultRotation.eulerAngles + v), Random.Range(1f,5f));
+            yield return new WaitForSeconds(Wait);
+            Vector3 v = new Vector3(Random.Range(-Range.x, Range.x), Random.Range(-Range.y, Range.y), Random.Range(Range.z, Range.z));
+            SetTargetRotation(Quaternion.Euler(DefaultRotation.eulerAngles + v), Random.Range(1f, 5f));
+            Wait = MovementDuration - progress + Random.Range(1f, 3f);
         }
     }
 }
