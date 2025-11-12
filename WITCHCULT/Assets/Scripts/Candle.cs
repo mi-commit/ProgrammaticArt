@@ -37,7 +37,7 @@ public class Candle : MonoBehaviour
 
     public void Flicker()
     {
-        Debug.Log("Flick");
+        //Debug.Log("Flick");
         Intensity = Intensity == IntensityOriginal ? Intensity * Random.Range(.8f,1.2f) : IntensityOriginal;
     }
 

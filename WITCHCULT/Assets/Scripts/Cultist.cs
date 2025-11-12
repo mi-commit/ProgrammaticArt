@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 
 public class Cultist : MonoBehaviour
 {
@@ -23,9 +25,14 @@ public class Cultist : MonoBehaviour
         bodyparts.Add(ShoulderR.AddComponent<Bodypart>());
 
         bodyparts[(int)PartIds.Spine].SetTargetRotation(Quaternion.identity, 2);
+        foreach(var part in bodyparts)
+        {
+            part.StartCoroutine(part.RandomCycle(new Vector3(10,10,10)));
+        }
+
     }
 
-    float TickTime = .1f;
+    float TickTime = .05f;
     float time = 0;
     private void FixedUpdate()
     {
@@ -39,6 +46,7 @@ public class Cultist : MonoBehaviour
                 p.Tick(Time.fixedDeltaTime);
             }
         }
+
     }
 }
 
@@ -49,12 +57,13 @@ public class Bodypart : MonoBehaviour
     public Quaternion DefaultRotation { get; private set; }
     Quaternion TargetRotation;
 
-    float MovementDuration = 1;
+    public float MovementDuration { get; private set; }
+    public float progress { get; private set; }
 
-    float progress = 0;
     public void Tick(float delta_time)
     {
         progress += delta_time;
+        if (progress >= MovementDuration) return;
         transform.localRotation = Quaternion.SlerpUnclamped(transform.localRotation, TargetRotation, progress / MovementDuration);
     }
     public void SetTargetRotation(Quaternion _TargetRoation, float _MovementDuration)
@@ -64,12 +73,20 @@ public class Bodypart : MonoBehaviour
         progress = 0;
     }
 
-    public Bodypart()
+    public void Awake()
     {
-        Debug.Log("P");
-
+        Debug.Log("Awake");
         DefaultRotation = transform.localRotation;
         TargetRotation = transform.localRotation;
     }
 
+    public IEnumerator RandomCycle(Vector3 Range)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(MovementDuration - progress + Random.Range(1f,3f));
+            Vector3 v = new Vector3(Random.Range(-Range.x,Range.x), Random.Range(-Range.y, Range.y), Random.Range(Range.z, Range.z));
+            SetTargetRotation(Quaternion.Euler(DefaultRotation.eulerAngles + v), Random.Range(1f,5f));
+        }
+    }
 }
