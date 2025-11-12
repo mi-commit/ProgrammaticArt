@@ -10,14 +10,15 @@ public class Cultist : MonoBehaviour
     [SerializeField]
     GameObject Spine, ShoulderL, ShoulderR, Head;
 
-
     enum PartIds
     {
         Spine, ShoulderL, ShoulderR, Head
     }
+    Material material;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        material = GetComponentInChildren<Renderer>().materials[0];
         bodyparts.Add(Spine.AddComponent<Bodypart>());
         bodyparts.Add(ShoulderL.AddComponent<Bodypart>());
         bodyparts.Add(ShoulderR.AddComponent<Bodypart>());
@@ -34,6 +35,7 @@ public class Cultist : MonoBehaviour
         {
             foreach (var part in bodyparts)
             {
+                StartCoroutine(Flash());
                 part.StopAllCoroutines();
                 part.SetTargetRotation(part.DefaultRotation, turnTime);
                 part.StartCoroutine(part.RandomCycle(new Vector3(10, 10, 10), RemainTime));
@@ -61,9 +63,20 @@ public class Cultist : MonoBehaviour
             {
 
                 p.Tick(Time.fixedDeltaTime);
-            }
-        }
 
+            }
+
+        }
+    }
+
+    IEnumerator Flash()
+    {
+        yield return new WaitForSeconds(.5f);
+        material.mainTextureOffset = new Vector2(0.19f,0);
+        yield return new WaitForSeconds(.5f);
+
+        material.mainTextureOffset = Vector2.zero;
+        yield break;
     }
 }
 

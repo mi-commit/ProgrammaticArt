@@ -19,12 +19,6 @@ public class Coven : MonoBehaviour
         cult = GetComponentsInChildren<Cultist>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void LookAtCamera()
     {
         foreach(Cultist c in cult)
