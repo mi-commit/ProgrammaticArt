@@ -21,6 +21,11 @@ class CovenEditor : Editor
             {
                 c.LookAt(c.Circle);
             }
+            if (GUILayout.Button("restart Debris-sequence"))
+            {
+                c.StopCoroutine(c.RandomCycle());
+                c.StartCoroutine(c.RandomCycle());
+            }
         }
 
 
