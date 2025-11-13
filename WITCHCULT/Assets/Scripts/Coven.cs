@@ -24,7 +24,8 @@ public class Coven : MonoBehaviour
     ScreenSpaceLensFlare flare;
     void Awake()
     {
-        StartCoroutine(RandomCycle());
+        cult = GetComponentsInChildren<Cultist>();
+
         VolumeProfile profile = m_volume.profile;
         if (!profile.TryGet<ScreenSpaceLensFlare>(out var f))
         {
@@ -32,11 +33,12 @@ public class Coven : MonoBehaviour
         }
         flare = f;
         flare.active = FlareEffect;
-        cult = GetComponentsInChildren<Cultist>();
+        StartCoroutine(RandomCycle());
+
     }
     public void LookAtCamera()
     {
-        StartCoroutine(CameraCycle(5));
+        //StartCoroutine(CameraCycle(5));
         foreach (Cultist c in cult)
         {
             c.LookAt(Camera.transform, 1, 5, true);
@@ -52,20 +54,20 @@ public class Coven : MonoBehaviour
     }
     IEnumerator CameraCycle (float duration)
     {
-        if(LookLock)yield return null;
+        if(LookLock)yield break;
         LookLock = true;
         FlareEffect = true;
         flare.active = true;
         flareIntensityTarget = 400;
         flareStart = 0;
-        flareDuration = duration;
+        flareDuration = duration/2;
         yield return new WaitForSeconds(duration);
         flareStart = 400; flareIntensityTarget = 0; flareDuration = duration;
-        yield return new WaitForSeconds(duration);
-
-
-        flare.active = false;
         LookLock = false;
+        yield return new WaitForSeconds(duration/2);
+
+        FlareEffect = false;
+        flare.active = false;
     }
     public void LookAt(GameObject target)
     {
@@ -80,6 +82,8 @@ public class Coven : MonoBehaviour
     {
         while (true)
         {
+
+            StartCoroutine(CameraCycle(10));
             float burstDuration = 5f;
             LookAt(Circle);
             while (burstDuration > 0)
