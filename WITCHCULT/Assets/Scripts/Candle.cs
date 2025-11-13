@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Candle : MonoBehaviour
 {
+    [SerializeField]
+    float minFlicker = .8f, maxFlicker = 1.2f;
 
     float IntensityOriginal = 1432f;
     float Intensity;
@@ -15,8 +17,7 @@ public class Candle : MonoBehaviour
         IntensityOriginal = light.intensity;
         Intensity = Random.Range(0, 1) == 1 ? light.intensity : light.intensity * .5f;
         light.intensity=Intensity;
-        flickerFrequency += Random.Range(-.3f, 1f);
-        LightController.candles.Add(this);
+        flickerFrequency += Random.Range(-.3f, .4f);
     }
 
     private float flickerFrequency = .75f;
@@ -37,8 +38,7 @@ public class Candle : MonoBehaviour
 
     public void Flicker()
     {
-        //Debug.Log("Flick");
-        Intensity = Intensity == IntensityOriginal ? Intensity * Random.Range(.8f,1.2f) : IntensityOriginal;
+        Intensity = Intensity == IntensityOriginal ? Intensity * Random.Range(minFlicker,maxFlicker) : IntensityOriginal;
     }
 
 }

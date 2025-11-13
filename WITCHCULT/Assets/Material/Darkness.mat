@@ -88,7 +88,7 @@ Material:
     - Vector1_FC0895C8: 0
     - Vector1_FEA38ABB: 0.5
     - _AddPrecomputedVelocity: 0
-    - _Alpha: 0.449
+    - _Alpha: 0.42
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
     - _AlphaSrcBlend: 1
