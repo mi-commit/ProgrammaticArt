@@ -46,24 +46,6 @@ public class Cultist : MonoBehaviour
         }
         bodyparts[(int)PartIds.Head].LookTowards(location.position, turnTime);
     }
-
-
-    float TickTime = .05f;
-    float time = 0;
-    private void FixedUpdate()
-    {
-        time += Time.deltaTime;
-        if (time > TickTime)
-        {
-            time -= TickTime;
-            foreach (Bodypart p in bodyparts)
-            {
-
-                p.Tick(Time.fixedDeltaTime);
-            }
-        }
-
-    }
 }
 
 
@@ -76,9 +58,9 @@ public class Bodypart : MonoBehaviour
     public float MovementDuration { get; private set; }
     public float progress { get; private set; }
 
-    public void Tick(float delta_time)
+    public void FixedUpdate()
     {
-        progress += delta_time;
+        progress += Time.fixedDeltaTime*.25f;
         if (progress >= MovementDuration) return;
         transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, TargetRotation, progress / MovementDuration);
     }
