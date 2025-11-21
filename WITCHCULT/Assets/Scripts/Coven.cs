@@ -24,6 +24,13 @@ public class Coven : MonoBehaviour
     [Header("Postprocessing volume")]
     public Volume m_volume;
 
+    [Header("Sequence controls")]
+
+    [SerializeField]
+    float Sequence_duration_base = 120;
+    [SerializeField]
+    float Sequence_duration_delta = 40; 
+
 
     //flare functionality, private
     bool FlareEffect = false;
@@ -105,7 +112,7 @@ public class Coven : MonoBehaviour
     {
         while (true)
         {
-            int EventId = 1;
+            int EventId = 2;
 
 
             switch (EventId)
@@ -122,11 +129,16 @@ public class Coven : MonoBehaviour
                     StartCoroutine(CameraCycle(6));
                     break;
 
+                case 2:
+                default:
+                    Debug.Log("NULL-EVENT");
+                    yield return new WaitForSeconds(10);
+                    break;
             }
 
 
 
-            yield return new WaitForSeconds(60);
+            yield return new WaitForSeconds(Sequence_duration_base + Random.Range(-Sequence_duration_delta, Sequence_duration_delta));
         }
     }
 
