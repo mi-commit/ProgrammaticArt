@@ -60,7 +60,7 @@ public class Bodypart : MonoBehaviour
 
     public void FixedUpdate()
     {
-        progress += Time.fixedDeltaTime*.25f;
+        progress += Time.fixedDeltaTime*.1f;
         if (progress >= MovementDuration) return;
         transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, TargetRotation, progress / MovementDuration);
     }
@@ -87,8 +87,8 @@ public class Bodypart : MonoBehaviour
         {
             yield return new WaitForSeconds(Wait);
             Vector3 v = new Vector3(Random.Range(-Range.x, Range.x), Random.Range(-Range.y, Range.y), Random.Range(Range.z, Range.z));
-            SetTargetRotation(Quaternion.Euler(DefaultRotation.eulerAngles + v), Random.Range(1f, 5f));
-            Wait = MovementDuration - progress + Random.Range(1f, 3f);
+            SetTargetRotation(Quaternion.Euler(DefaultRotation.eulerAngles + v), Random.Range(1f, 4f));
+            Wait = MovementDuration - progress + Random.Range(.5f, 1f);
         }
     }
 }
