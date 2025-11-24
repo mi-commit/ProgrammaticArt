@@ -1,4 +1,7 @@
+using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
 
 public class Candle : MonoBehaviour
 {
@@ -10,6 +13,32 @@ public class Candle : MonoBehaviour
 
     Light light;
 
+    static List<Candle> candles = new();
+
+    private Color colorOrig;
+    private Color colorTarget;
+
+
+
+    static public void ColorChangeEvent(Color _color, float time = 5)
+    {
+        foreach (Candle candle in candles)
+        {
+            candle.StartCoroutine(candle.ColorChangeRoutine(_color, time));
+        }
+    }
+    public IEnumerator ColorChangeRoutine(Color switchColor, float time =5)
+    {
+        Color originalColor = this.light.color;
+        
+        light.color = switchColor;
+        yield return new WaitForSeconds(time);
+        light.color = originalColor;
+    }
+
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,6 +47,7 @@ public class Candle : MonoBehaviour
         Intensity = Random.Range(0, 1) == 1 ? light.intensity : light.intensity * .5f;
         light.intensity=Intensity;
         flickerFrequency += Random.Range(-.3f, .4f);
+        candles.Add(this);
     }
 
     private float flickerFrequency = .75f;

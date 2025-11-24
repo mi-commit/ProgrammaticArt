@@ -112,7 +112,7 @@ public class Coven : MonoBehaviour
     {
         while (true)
         {
-            int EventId = 1;
+            int EventId = 5;
 
             yield return new WaitForSeconds(1);
             switch (EventId)
@@ -152,8 +152,9 @@ public class Coven : MonoBehaviour
                     LookAt(Circle, 4, 9);
                     yield return new WaitForSeconds(20);
                     continue;
-                case 5: 
-                    
+                case 5:
+                    Candle.ColorChangeEvent(Color.green, 5);
+
                     break;
 
 
