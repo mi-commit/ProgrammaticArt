@@ -29,7 +29,7 @@ public class Coven : MonoBehaviour
     [SerializeField]
     float Sequence_duration_base = 120;
     [SerializeField]
-    float Sequence_duration_delta = 40; 
+    float Sequence_duration_delta = 40;
 
 
     //flare functionality, private
@@ -58,12 +58,12 @@ public class Coven : MonoBehaviour
 
     }
     //* LOOKING AT specific THINGS!**********
-    public void LookAt(GameObject target)
+    public void LookAt(GameObject target, float turnTime = 4, float remainTime = 9)
     {
         if (LookLock) return;
         foreach (Cultist c in cult)
         {
-            c.LookAt(target.transform, 4, 9, false);
+            c.LookAt(target.transform, turnTime, remainTime, false);
         }
     }
     public void LookAtCamera()
@@ -79,10 +79,10 @@ public class Coven : MonoBehaviour
 
 
     //FLARES N THINGS **********
-    IEnumerator CameraCycle (float duration)
+    IEnumerator CameraCycle(float duration)
     {
-        if(LookLock)yield break;
-        maxFlareDuration = duration/2;
+        if (LookLock) yield break;
+        maxFlareDuration = duration / 2;
         LookLock = true;
         FlareEffect = true;
         flare.active = true;
@@ -90,10 +90,10 @@ public class Coven : MonoBehaviour
         flareStart = 0;
 
         flareDuration = duration / 4;
-        yield return new WaitForSeconds(duration/2);
-        flareStart = 400; flareIntensityTarget = 0; flareDuration = duration/4;
+        yield return new WaitForSeconds(duration / 2);
+        flareStart = 400; flareIntensityTarget = 0; flareDuration = duration / 4;
         LookLock = false;
-        yield return new WaitForSeconds(duration/2);
+        yield return new WaitForSeconds(duration / 2);
 
         FlareEffect = false;
         flare.active = false;
@@ -112,16 +112,19 @@ public class Coven : MonoBehaviour
     {
         while (true)
         {
-            int EventId = 2;
+            int EventId = 1;
 
-
+            yield return new WaitForSeconds(1);
             switch (EventId)
             {
                 case 0:
+                    //DEBRIS
                     StartCoroutine(DebrisSequence(10));
                     yield return new WaitForSeconds(10);
                     break;
-                 case 1:
+
+                case 1:
+                    //CAMSWITCH_BASIC
                     StartCoroutine(CameraCycle(6));
                     yield return new WaitForSeconds(1);
                     CameraSwitcher.Switch(10);
@@ -130,6 +133,30 @@ public class Coven : MonoBehaviour
                     break;
 
                 case 2:
+                    //CAMSWITCH_LOOKAROUND
+                    StartCoroutine(CameraCycle(6));
+                    yield return new WaitForSeconds(1);
+                    CameraSwitcher.Switch(17);
+                    yield return new WaitForSeconds(3);
+                    LookAt(Sky, 4, 4);
+                    yield return new WaitForSeconds(4);
+                    LookAt(Circle, 4, 9);
+                    yield return new WaitForSeconds(10);
+                    StartCoroutine(CameraCycle(6));
+                    break;
+
+                case 3:
+                case 4:
+                    LookAt(Sky, 4, 4);
+                    yield return new WaitForSeconds(4);
+                    LookAt(Circle, 4, 9);
+                    yield return new WaitForSeconds(20);
+                    continue;
+                case 5: 
+                    
+                    break;
+
+
                 default:
                     Debug.Log("NULL-EVENT");
                     yield return new WaitForSeconds(10);
@@ -148,7 +175,7 @@ public class Coven : MonoBehaviour
     private IEnumerator DebrisSequence(float TotalDuration)
     {
         StartCoroutine(CameraCycle(TotalDuration));
-        float burstDuration = TotalDuration/2;
+        float burstDuration = TotalDuration / 2;
         LookAt(Circle);
         while (burstDuration > 0)
         {

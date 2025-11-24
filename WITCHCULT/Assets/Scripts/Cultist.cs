@@ -8,7 +8,7 @@ public class Cultist : MonoBehaviour
 
     [SerializeField]
     GameObject Spine, ShoulderL, ShoulderR, Head;
-
+    Bodypart bp_Head;
 
     enum PartIds
     {
@@ -20,7 +20,8 @@ public class Cultist : MonoBehaviour
         bodyparts.Add(Spine.AddComponent<Bodypart>());
         bodyparts.Add(ShoulderL.AddComponent<Bodypart>());
         bodyparts.Add(ShoulderR.AddComponent<Bodypart>());
-        bodyparts.Add(Head.AddComponent<Bodypart>());
+        bp_Head = Head.AddComponent<Bodypart>();
+        bodyparts.Add(bp_Head);
 
         foreach (var part in bodyparts)
         {
@@ -40,11 +41,12 @@ public class Cultist : MonoBehaviour
         }
         else
         {
-            bodyparts[(int)PartIds.Head].StopAllCoroutines();
-            bodyparts[(int)PartIds.Head].StartCoroutine(bodyparts[(int)PartIds.Head].RandomCycle(new Vector3(10, 10, 10), RemainTime));
+
+            bp_Head?.StopAllCoroutines();
+            bp_Head.StartCoroutine(bp_Head.RandomCycle(new Vector3(10, 10, 10), RemainTime));
 
         }
-        bodyparts[(int)PartIds.Head].LookTowards(location.position, turnTime);
+        bp_Head.LookTowards(location.position, turnTime);
     }
 }
 
