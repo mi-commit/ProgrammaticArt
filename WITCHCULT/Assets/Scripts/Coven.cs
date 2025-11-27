@@ -31,6 +31,8 @@ public class Coven : MonoBehaviour
     [SerializeField]
     float Sequence_duration_delta = 40;
 
+    bool eventLock;
+
 
     //flare functionality, private
     bool FlareEffect = false;
@@ -42,7 +44,7 @@ public class Coven : MonoBehaviour
 
 
     private bool LookLock;
-
+    private bool AllowMovementReaction = true;
     void Awake()
     {
         cult = GetComponentsInChildren<Cultist>();
@@ -68,6 +70,7 @@ public class Coven : MonoBehaviour
     }
     public void LookAtCamera()
     {
+        if (!AllowMovementReaction) return;
         //StartCoroutine(CameraCycle(5));
         foreach (Cultist c in cult)
         {
@@ -75,7 +78,6 @@ public class Coven : MonoBehaviour
         }
     }
     //******************************************
-
 
 
     //FLARES N THINGS **********
@@ -125,15 +127,19 @@ public class Coven : MonoBehaviour
 
                 case 1:
                     //CAMSWITCH_BASIC
+                    AllowMovementReaction = false;
                     StartCoroutine(CameraCycle(6));
                     yield return new WaitForSeconds(1);
                     CameraSwitcher.Switch(10);
                     yield return new WaitForSeconds(7);
                     StartCoroutine(CameraCycle(6));
+                    AllowMovementReaction = true;
                     break;
 
                 case 2:
                     //CAMSWITCH_LOOKAROUND
+                    AllowMovementReaction = false;
+
                     StartCoroutine(CameraCycle(6));
                     yield return new WaitForSeconds(1);
                     CameraSwitcher.Switch(17);
@@ -143,6 +149,8 @@ public class Coven : MonoBehaviour
                     LookAt(Circle, 4, 9);
                     yield return new WaitForSeconds(10);
                     StartCoroutine(CameraCycle(6));
+                    AllowMovementReaction = true;
+
                     break;
 
                 case 3:
