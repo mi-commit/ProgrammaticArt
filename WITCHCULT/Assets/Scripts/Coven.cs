@@ -145,6 +145,7 @@ public class Coven : MonoBehaviour
                     StartCoroutine(CameraCycle(6));
                     break;
 
+                //sky lookat crap
                 case 3:
                 case 4:
                     LookAt(Sky, 4, 4);
@@ -152,12 +153,22 @@ public class Coven : MonoBehaviour
                     LookAt(Circle, 4, 9);
                     yield return new WaitForSeconds(20);
                     continue;
+
+                //Color change events
                 case 5:
-                    Candle.ColorChangeEvent(Color.green, 5);
-
+                    Candle.ColorChangeEvent(Color.cyan, 5);
                     break;
-
-
+                case 6:
+                    Candle.ColorChangeEvent(new Color(1f,0f,0.9f), 2);
+                    break;
+                case 7:
+                    //tulee kädet silmien etee takaaa
+                    break;
+                case 8:
+                    //jumpscare
+                    break;
+                case 9:
+                    //maxwell
                 default:
                     Debug.Log("NULL-EVENT");
                     yield return new WaitForSeconds(10);

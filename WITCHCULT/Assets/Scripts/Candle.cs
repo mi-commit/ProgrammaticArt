@@ -17,6 +17,7 @@ public class Candle : MonoBehaviour
 
     private Color colorOrig;
     private Color colorTarget;
+    private bool ChangingColor;
 
 
 
@@ -29,11 +30,17 @@ public class Candle : MonoBehaviour
     }
     public IEnumerator ColorChangeRoutine(Color switchColor, float time =5)
     {
-        Color originalColor = this.light.color;
-        
-        light.color = switchColor;
+        colorOrig = this.light.color;        
+        colorTarget = switchColor;
+        ChangingColor = true;
+        ColorChangeTimer = time;
+        maxColorChangeTimer = time;
         yield return new WaitForSeconds(time);
-        light.color = originalColor;
+        colorTarget = colorOrig;
+
+        yield return new WaitForSeconds(time);
+        ChangingColor = false;
+        light.color = colorOrig;
     }
 
 
@@ -52,10 +59,18 @@ public class Candle : MonoBehaviour
 
     private float flickerFrequency = .75f;
     private float timer = 0;
+    private float ColorChangeTimer;
+    private float maxColorChangeTimer;
     void Update()
     {
 
         light.intensity = Mathf.Lerp(light.intensity, Intensity, timer / flickerFrequency);
+
+        if (ColorChangeTimer > 0 && ChangingColor)
+        {
+            ColorChangeTimer -= Time.deltaTime;
+            light.color= Color.Lerp(light.color, colorTarget, 1- (ColorChangeTimer / maxColorChangeTimer));
+        }
 
         timer += Time.deltaTime;
 
