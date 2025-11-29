@@ -21,6 +21,9 @@ public class Coven : MonoBehaviour
     [SerializeField]
     float debrisLifeTime = 4;
 
+    [SerializeField]
+    GameObject Maxwell;
+
     [Header("Postprocessing volume")]
     public Volume m_volume;
 
@@ -114,7 +117,7 @@ public class Coven : MonoBehaviour
     {
         while (true)
         {
-            int EventId = 5;
+            int EventId = 10;
 
             yield return new WaitForSeconds(1);
             switch (EventId)
@@ -164,7 +167,21 @@ public class Coven : MonoBehaviour
                     Candle.ColorChangeEvent(Color.green, 5);
 
                     break;
-
+                case 10:
+                    //maxwell::
+                    GameObject maxInstance = Instantiate(Maxwell, Circle.transform);
+                    float strobeTime = .2f;
+                    while(maxInstance != null){
+                        Candle.ColorChangeEvent(Color.green, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.red, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.yellow, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.cyan, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                    }
+                    break;
 
                 default:
                     Debug.Log("NULL-EVENT");
