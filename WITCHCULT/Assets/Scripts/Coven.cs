@@ -116,9 +116,10 @@ public class Coven : MonoBehaviour
     //******************************************
     public IEnumerator RandomCycle()
     {
+        int EventCount = 10;
         while (true)
         {
-            int EventId = 5;
+            int EventId = Random.Range(0, EventCount);
 
             yield return new WaitForSeconds(1);
             switch (EventId)
@@ -182,19 +183,20 @@ public class Coven : MonoBehaviour
                 case 10:
                     //maxwell::
                     GameObject maxInstance = Instantiate(Maxwell, Circle.transform);
-                    LookAt(Circle, 4, 4);
-                    float strobeTime = .2f;
+                    StartCoroutine(MaxwellLook(maxInstance.GetComponent<TransformRotater>().lifeTime));
+                    float strobeTime = .5f;
                     while(maxInstance != null){
-                        Candle.ColorChangeEvent(Color.green, strobeTime);
+                        Candle.ColorChangeEvent(Color.red, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
                         Candle.ColorChangeEvent(Color.yellow, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
                         Candle.ColorChangeEvent(Color.cyan, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
-                        Candle.ColorChangeEvent(Color.red, strobeTime);
+                        Candle.ColorChangeEvent(Color.green, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
                     }
-                    LookAt(Sky, 4, 4);
+                    Candle.ColorChangeEvent(Color.red, 2);
+                    yield return new WaitForSeconds(2);
                     break;
 
                 default:
@@ -202,16 +204,19 @@ public class Coven : MonoBehaviour
                     yield return new WaitForSeconds(10);
                     break;
             }
-
-
-
             yield return new WaitForSeconds(Sequence_duration_base + Random.Range(-Sequence_duration_delta, Sequence_duration_delta));
         }
     }
 
 
 
-
+    private IEnumerator MaxwellLook(float time)
+    {
+        LookAt(Circle, 3, 5);
+        yield return new WaitForSeconds(time*.4f);
+        LookAt(Sky, 22, 7);
+        yield break;
+    }
     private IEnumerator DebrisSequence(float TotalDuration)
     {
         StartCoroutine(CameraCycle(TotalDuration));

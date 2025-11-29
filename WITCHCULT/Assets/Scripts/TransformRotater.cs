@@ -3,7 +3,7 @@ using UnityEngine;
 public class TransformRotater : Rotater
 {
     [SerializeField]
-    private float lifeTime = 5;
+    public float lifeTime = 5;
 
     [SerializeField]
     private Vector3 translate;
