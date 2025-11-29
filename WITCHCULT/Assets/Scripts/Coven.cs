@@ -170,17 +170,19 @@ public class Coven : MonoBehaviour
                 case 10:
                     //maxwell::
                     GameObject maxInstance = Instantiate(Maxwell, Circle.transform);
+                    LookAt(Circle, 4, 4);
                     float strobeTime = .2f;
                     while(maxInstance != null){
                         Candle.ColorChangeEvent(Color.green, strobeTime);
-                        yield return new WaitForSeconds(strobeTime);
-                        Candle.ColorChangeEvent(Color.red, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
                         Candle.ColorChangeEvent(Color.yellow, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
                         Candle.ColorChangeEvent(Color.cyan, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.red, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
                     }
+                    LookAt(Sky, 4, 4);
                     break;
 
                 default:
