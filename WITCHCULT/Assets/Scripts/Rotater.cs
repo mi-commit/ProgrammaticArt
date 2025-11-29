@@ -7,6 +7,11 @@ public class Rotater : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.localRotation *= Quaternion.Euler(RotationSpeed*Time.fixedDeltaTime);
+        Rotate();
+    }
+    protected void Rotate()
+    {
+        transform.localRotation *= Quaternion.Euler(RotationSpeed * Time.fixedDeltaTime);
+
     }
 }

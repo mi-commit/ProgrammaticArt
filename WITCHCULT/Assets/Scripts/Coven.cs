@@ -21,6 +21,9 @@ public class Coven : MonoBehaviour
     [SerializeField]
     float debrisLifeTime = 4;
 
+    [SerializeField]
+    GameObject Maxwell;
+
     [Header("Postprocessing volume")]
     public Volume m_volume;
 
@@ -30,6 +33,8 @@ public class Coven : MonoBehaviour
     float Sequence_duration_base = 120;
     [SerializeField]
     float Sequence_duration_delta = 40;
+
+    bool eventLock;
 
 
     //flare functionality, private
@@ -42,7 +47,7 @@ public class Coven : MonoBehaviour
 
 
     private bool LookLock;
-
+    private bool AllowMovementReaction = true;
     void Awake()
     {
         cult = GetComponentsInChildren<Cultist>();
@@ -68,6 +73,7 @@ public class Coven : MonoBehaviour
     }
     public void LookAtCamera()
     {
+        if (!AllowMovementReaction) return;
         //StartCoroutine(CameraCycle(5));
         foreach (Cultist c in cult)
         {
@@ -125,15 +131,19 @@ public class Coven : MonoBehaviour
 
                 case 1:
                     //CAMSWITCH_BASIC
+                    AllowMovementReaction = false;
                     StartCoroutine(CameraCycle(6));
                     yield return new WaitForSeconds(1);
                     CameraSwitcher.Switch(10);
                     yield return new WaitForSeconds(7);
                     StartCoroutine(CameraCycle(6));
+                    AllowMovementReaction = true;
                     break;
 
                 case 2:
                     //CAMSWITCH_LOOKAROUND
+                    AllowMovementReaction = false;
+
                     StartCoroutine(CameraCycle(6));
                     yield return new WaitForSeconds(1);
                     CameraSwitcher.Switch(17);
@@ -143,6 +153,8 @@ public class Coven : MonoBehaviour
                     LookAt(Circle, 4, 9);
                     yield return new WaitForSeconds(10);
                     StartCoroutine(CameraCycle(6));
+                    AllowMovementReaction = true;
+
                     break;
 
                 //sky lookat crap
@@ -167,8 +179,24 @@ public class Coven : MonoBehaviour
                 case 8:
                     //jumpscare
                     break;
-                case 9:
-                    //maxwell
+                case 10:
+                    //maxwell::
+                    GameObject maxInstance = Instantiate(Maxwell, Circle.transform);
+                    LookAt(Circle, 4, 4);
+                    float strobeTime = .2f;
+                    while(maxInstance != null){
+                        Candle.ColorChangeEvent(Color.green, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.yellow, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.cyan, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                        Candle.ColorChangeEvent(Color.red, strobeTime);
+                        yield return new WaitForSeconds(strobeTime);
+                    }
+                    LookAt(Sky, 4, 4);
+                    break;
+
                 default:
                     Debug.Log("NULL-EVENT");
                     yield return new WaitForSeconds(10);
