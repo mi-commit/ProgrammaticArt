@@ -305,12 +305,12 @@ MonoBehaviour:
       Fog_ControlMode: 000000000000000000000000
       Fog_Budget:
       - 0.25
-      - 0.435
-      - 0.499
+      - 0.686
+      - 0.799
       Fog_DepthRatio:
       - 0.5
-      - 0.366
-      - 0
+      - 0.314
+      - 0.74
     gpuResidentDrawerSettings:
       mode: 0
       smallMeshScreenPercentage: 0
