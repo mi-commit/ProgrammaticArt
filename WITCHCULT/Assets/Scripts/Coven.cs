@@ -123,6 +123,7 @@ public class Coven : MonoBehaviour
 
             int EventId = Random.Range(0, EventCount);
             //EventId = 9;
+            EventId = 9;
             yield return new WaitForSeconds(1);
             switch (EventId)
             {
@@ -170,8 +171,7 @@ public class Coven : MonoBehaviour
                     LookAt(Sky, 4, 4);
                     yield return new WaitForSeconds(4);
                     LookAt(Circle, 4, 9);
-                    yield return new WaitForSeconds(20);
-                    continue;
+                    break;
 
                 //Color change events
                 case 5:
