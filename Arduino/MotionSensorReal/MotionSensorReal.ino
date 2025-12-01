@@ -24,14 +24,14 @@
 
 // import the library (must be located in the Arduino/libraries directory)
 #include <CapacitiveSensor.h>
-
+// #define debug
 // create an instance of the library
 // pin 4 sends electrical energy
 // pin 2 senses senses a change
 CapacitiveSensor capSensor = CapacitiveSensor(4, 2);
-
+// #define debug
 // threshold for turning the lamp on
-int threshold = 130;
+int threshold = 500;
 
 // pin the LED is connected to
 const int ledPin = 12;
@@ -47,7 +47,7 @@ void setup() {
   // set the LED pin as an output
   pinMode(ledPin, OUTPUT);
 }
-
+float LastAverage = 10000;
 void loop() {
     delay(10);
 
@@ -55,21 +55,31 @@ void loop() {
   long sensorValue = capSensor.capacitiveSensor(30);
   AddToAverage(sensorValue);
   long average = Average();
+  #ifdef debug
   // print out the sensor value
-  Serial.print(sensorValue);
-  Serial.print(",");
-  Serial.println(average);
-
+   Serial.print(sensorValue);
+   Serial.print(",");
+   Serial.println(average);
+  #endif
   // if the value is greater than the threshold
   if (average > threshold) {
     // turn the LED on
     digitalWrite(ledPin, HIGH);
+    
+    #ifndef debug
+    if(LastAverage <= threshold){
+      Serial.println("Movement");
+      delay(500);
+    }
+    #endif
   }
   // if it's lower than the threshold
   else {
     // turn the LED off
     digitalWrite(ledPin, LOW);
+    
   }
+  LastAverage = average;
 }
 void AddToAverage(long value){
   if(CurrentSample >= SAMPLECOUNT){
