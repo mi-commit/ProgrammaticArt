@@ -1,4 +1,4 @@
-//BY LuckyBalla
+//denoising solution: BY LuckyBalla
 // https://www.shadertoy.com/view/NlccR8
 
 #define STEPS 26
