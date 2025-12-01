@@ -120,7 +120,6 @@ public class Coven : MonoBehaviour
         while (true)
         {
             int EventId = Random.Range(0, EventCount);
-
             yield return new WaitForSeconds(1);
             switch (EventId)
             {
@@ -180,11 +179,11 @@ public class Coven : MonoBehaviour
                 case 8:
                     //jumpscare
                     break;
-                case 10:
+                case 9:
                     //maxwell::
                     GameObject maxInstance = Instantiate(Maxwell, Circle.transform);
                     StartCoroutine(MaxwellLook(maxInstance.GetComponent<TransformRotater>().lifeTime));
-                    float strobeTime = .5f;
+                    float strobeTime = .2f;
                     while(maxInstance != null){
                         Candle.ColorChangeEvent(Color.red, strobeTime);
                         yield return new WaitForSeconds(strobeTime);
