@@ -7,13 +7,16 @@ public class MovementListener : MonoBehaviour
     [SerializeField]
     float MinTime = 60;
     float LastMessageTime;
+    Coven coven => GetComponent<Coven>();
     void OnMessageArrived(string msg)
     {
         if(Time.time > LastMessageTime + MinTime)
         {
             LastMessageTime = Time.time;
             Debug.Log(msg);
-            GetComponent<Coven>().LookAtCamera();
+            coven.StopCoroutine(coven.RandomCycle());
+            coven.StartCoroutine(coven.RandomCycle());
+            coven.LookAtCamera();
         }
 
     }

@@ -119,14 +119,21 @@ public class Coven : MonoBehaviour
         int EventCount = 10;
         while (true)
         {
+            yield return new WaitForSeconds(Sequence_duration_base + Random.Range(-Sequence_duration_delta, Sequence_duration_delta));
+
             int EventId = Random.Range(0, EventCount);
+            //EventId = 9;
             yield return new WaitForSeconds(1);
             switch (EventId)
             {
                 case 0:
                     //DEBRIS
+                    AllowMovementReaction = false;
+
                     StartCoroutine(DebrisSequence(10));
                     yield return new WaitForSeconds(10);
+                    AllowMovementReaction = true;
+
                     break;
 
                 case 1:
@@ -181,8 +188,12 @@ public class Coven : MonoBehaviour
                     break;
                 case 9:
                     //maxwell::
+                    AllowMovementReaction = false;
+
                     GameObject maxInstance = Instantiate(Maxwell, Circle.transform);
                     StartCoroutine(MaxwellLook(maxInstance.GetComponent<TransformRotater>().lifeTime));
+                    StartCoroutine(CameraCycle(maxInstance.GetComponent<TransformRotater>().lifeTime));
+
                     float strobeTime = .2f;
                     while(maxInstance != null){
                         Candle.ColorChangeEvent(Color.red, strobeTime);
@@ -196,6 +207,8 @@ public class Coven : MonoBehaviour
                     }
                     Candle.ColorChangeEvent(Color.red, 2);
                     yield return new WaitForSeconds(2);
+                    AllowMovementReaction = true;
+
                     break;
 
                 default:
@@ -203,7 +216,6 @@ public class Coven : MonoBehaviour
                     yield return new WaitForSeconds(10);
                     break;
             }
-            yield return new WaitForSeconds(Sequence_duration_base + Random.Range(-Sequence_duration_delta, Sequence_duration_delta));
         }
     }
 
