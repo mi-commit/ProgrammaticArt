@@ -22,10 +22,11 @@ public class Coven : MonoBehaviour
     float debrisLifeTime = 4;
 
     [SerializeField]
-    GameObject Maxwell;
+    GameObject Maxwell, Hands;
 
     [Header("Postprocessing volume")]
     public Volume m_volume;
+
 
     [Header("Sequence controls")]
 
@@ -181,8 +182,10 @@ public class Coven : MonoBehaviour
                     Candle.ColorChangeEvent(new Color(1f,0f,0.9f), 2);
                     break;
                 case 7:
-                    //tulee kädet silmien etee takaaa
+                    Hands.SetActive(true);
+                    yield return new WaitForSeconds(5.5f);
                     break;
+
                 case 8:
                     //jumpscare
                     break;
