@@ -117,15 +117,18 @@ public class Coven : MonoBehaviour
     //******************************************
     public IEnumerator RandomCycle()
     {
-        int EventCount = 10;
+        const int EventCount = 10;
+        int lastEventId = -1;
         while (true)
         {
-            yield return new WaitForSeconds(Sequence_duration_base + Random.Range(-Sequence_duration_delta, Sequence_duration_delta));
+            yield return new WaitForSecondsRealtime(Sequence_duration_base + Random.Range(-Sequence_duration_delta, Sequence_duration_delta));
 
             int EventId = Random.Range(0, EventCount);
-            //EventId = 9;
-            EventId = 9;
-            yield return new WaitForSeconds(1);
+            while(EventId == lastEventId)
+            {
+                EventId = Random.Range(0, EventCount);
+            }
+            lastEventId = EventId;
             switch (EventId)
             {
                 case 0:

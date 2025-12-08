@@ -14,8 +14,6 @@ public class MovementListener : MonoBehaviour
         {
             LastMessageTime = Time.time;
             Debug.Log(msg);
-            coven.StopCoroutine(coven.RandomCycle());
-            coven.StartCoroutine(coven.RandomCycle());
             coven.LookAtCamera();
         }
 
