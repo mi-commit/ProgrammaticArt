@@ -135,6 +135,12 @@
     <ClCompile Include="..\..\..\..\OpenGl Libraries\Libs\glad.c" />
     <ClCompile Include="MainFileIGuess.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="3.3.shader.frag" />
+    <Text Include="3.3.shader.vert">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

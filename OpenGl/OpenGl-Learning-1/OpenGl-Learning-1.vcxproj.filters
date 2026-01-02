@@ -22,4 +22,14 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="3.3.shader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="3.3.shader.vert">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

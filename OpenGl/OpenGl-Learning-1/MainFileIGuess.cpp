@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <Shader.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -22,61 +23,6 @@ unsigned int indices[] = {
 	1, 2, 3    // second triangle
 };
 
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 Color;\n"
-"out vec3 VertexColor;\n"
-"void main()\n"
-"{\n"
-" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-" VertexColor = Color;\n"
-"}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4	FragColor;\n"
-"in	 vec3	VertexColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(VertexColor, 1.0);\n"
-"}\0";
-
-void CompileShader(unsigned int shader, const char* source) {
-	glShaderSource(shader, 1, &source, NULL);
-	glCompileShader(shader);
-
-	int success;
-	char infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" <<
-			infoLog << std::endl;
-	}
-}
-
-void CreateShaders(
-	unsigned int & VBO, unsigned int & VAO, unsigned int& shaderProgram) {
-
-
-
-	unsigned int vertexShader	= glCreateShader(GL_VERTEX_SHADER);
-	unsigned int fragmentShader	= glCreateShader(GL_FRAGMENT_SHADER);
-	std::cout << "Compiling VertexShader\n";
-	CompileShader(vertexShader,		vertexShaderSource);
-	std::cout << "Compiling FragmentShader\n";
-	CompileShader(fragmentShader,	fragmentShaderSource);
-
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glDeleteShader(vertexShader); glDeleteShader(vertexShader);
-
-
-
-}
 void  setupVertexArrays(unsigned int & VAO, unsigned int &VBO, unsigned int & ElementBuffer) {
 
 	glGenVertexArrays(1, &VAO);
@@ -134,11 +80,11 @@ int main() {
 
 
 	//create shader program::
+	Shader shader("3.3.shader.vert", "3.3.shader.frag");
+
 	unsigned int VBO;
-	unsigned int shaderProgram;
 	unsigned int VAO, ElementBuffer;
 
-	CreateShaders(VBO, VAO, shaderProgram);
 	setupVertexArrays(VAO, VBO, ElementBuffer);
 
 	//render loop
@@ -147,10 +93,8 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		float time = glfwGetTime();
 		float green = (sin(time) / 2.0f) + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "Color");
-
-		glUseProgram(shaderProgram);
-		glUniform4f(vertexColorLocation, 0.0f, green, 0.0f, 1.0f);
+		shader.Use();
+		shader.SetFloat4("Color", 0.0f, green, 0.0f, 1.0f);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
