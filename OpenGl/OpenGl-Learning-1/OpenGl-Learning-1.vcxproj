@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGl Libraries\Libs\glad.c" />
     <ClCompile Include="MainFileIGuess.cpp" />
+    <ClCompile Include="STB.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="3.3.shader.frag" />

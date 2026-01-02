@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <Shader.h>
+#include <stb_image.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -12,16 +13,18 @@ void processInput(GLFWwindow* window);
 
 
 float vertices[] = {
-	//pos					//color
-	 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,// top right
-	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,// bottom right
-	-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,// bottom left
-	-0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 0.0f// top left 
+	//pos					//color				uv
+	 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,			// top right
+	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,			// bottom right
+	-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,			// bottom left
+	-0.5f,  0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f			// top left 
 };
+
 unsigned int indices[] = {
 	0, 1, 3,   // first triangle
 	1, 2, 3    // second triangle
 };
+
 
 void  setupVertexArrays(unsigned int & VAO, unsigned int &VBO, unsigned int & ElementBuffer) {
 
@@ -41,10 +44,12 @@ void  setupVertexArrays(unsigned int & VAO, unsigned int &VBO, unsigned int & El
 
 	// 4. then set our vertex attributes pointers
 		//position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 }
 
 
@@ -77,6 +82,44 @@ int main() {
 
 	//called every time user resizes window, so that things function still yay
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	
+	//texture
+	// TODO:: MOVE TO SOME OTHER CLASS!!
+	uint32_t texture, texture2;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// load image
+	if (true) {
+		int width, height, nrChannels;
+		unsigned char* textureData = stbi_load("IMG/wall.jpg", &width, &height, &nrChannels, 0);
+		if (textureData) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else {
+			std::cout << "failed to load texture" << std::endl;
+		}
+		stbi_image_free(textureData);
+	}
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	if (true) {
+		int width, height, nrChannels;
+		unsigned char* textureData = stbi_load("IMG/awesomeface.png", &width, &height, &nrChannels, 0);
+		if (textureData) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else {
+			std::cout << "failed to load texture" << std::endl;
+		}
+		stbi_image_free(textureData);
+
+	}
+
 
 
 	//create shader program::
@@ -94,7 +137,16 @@ int main() {
 		float time = glfwGetTime();
 		float green = (sin(time) / 2.0f) + 0.5f;
 		shader.Use();
+		shader.SetInt("ourTexture1", 0);
+		shader.SetInt("ourTexture2", 1);
+
 		shader.SetFloat4("Color", 0.0f, green, 0.0f, 1.0f);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
