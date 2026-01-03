@@ -7,10 +7,13 @@
 #include <Shader.h>
 #include <stb_image.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-
-
 
 float vertices[] = {
 	//pos					//color				uv
@@ -26,7 +29,7 @@ unsigned int indices[] = {
 };
 
 
-void  setupVertexArrays(unsigned int & VAO, unsigned int &VBO, unsigned int & ElementBuffer) {
+void  setupVertexArrays(unsigned int& VAO, unsigned int& VBO, unsigned int& ElementBuffer) {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -130,17 +133,31 @@ int main() {
 
 	setupVertexArrays(VAO, VBO, ElementBuffer);
 
+	shader.Use();
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	//trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+
+	unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+	float lastMeasureTime = glfwGetTime();
+
+	int frameCount = 0;
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f),
-		glClear(GL_COLOR_BUFFER_BIT);
 		float time = glfwGetTime();
-		float green = (sin(time) / 2.0f) + 0.5f;
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f), glClear(GL_COLOR_BUFFER_BIT);
+		trans = glm::rotate(trans, glm::radians(1.0f), glm::vec3(0.0, 0.0, 1.0));
+		trans = glm::scale(trans, glm::vec3(1.0001));
+
 		shader.Use();
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
 		shader.SetInt("ourTexture1", 0);
 		shader.SetInt("ourTexture2", 1);
 
-		shader.SetFloat4("Color", 0.0f, green, 0.0f, 1.0f);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
@@ -152,12 +169,21 @@ int main() {
 		glBindVertexArray(0);
 
 
-		processInput(window); 
+		processInput(window);
 
 
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
+
+		if (time - lastMeasureTime > 1) {
+			std::cout << "fps:  " << (frameCount) << std::endl;
+			frameCount = 0;
+			lastMeasureTime = time;
+		}
+		else {
+			frameCount++;
+		}
 	}
 
 
@@ -175,6 +201,6 @@ void processInput(GLFWwindow* window) {
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	int size = width < height ? width : height;
-	std::cout << "WIDTH: " << width << " HEIGHT: " << height << " SIZE: "<< size << std::endl;
+	std::cout << "WIDTH: " << width << " HEIGHT: " << height << " SIZE: " << size << std::endl;
 	glViewport(0, 0, size, size);
 }
