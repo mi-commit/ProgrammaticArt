@@ -16,17 +16,56 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 float vertices[] = {
-	//pos					//color				uv
-	 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,			// top right
-	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,			// bottom right
-	-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,			// bottom left
-	-0.5f,  0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f			// top left 
-};
+	 0.5f,  0.5f,-0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,			// top right
+	 0.5f, -0.5f,-0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,			// bottom right
+	-0.5f, -0.5f,-0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,			// bottom left
+	-0.5f,  0.5f,-0.5f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f,			// top left 
 
-unsigned int indices[] = {
-	0, 1, 3,   // first triangle
-	1, 2, 3    // second triangle
+	//pos					//color				uv
+	 0.5f,  0.5f, 0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,			// top right
+	 0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,			// bottom right
+	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,			// bottom left
+	-0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f			// top left 
 };
+unsigned int indices[] = {
+	//front face
+	0, 1, 3,   // first triangle
+	1, 2, 3,    // second triangle
+	//bottom
+	1, 2, 5,
+	2, 5, 6,
+	//left
+	2, 3 ,7,
+	2, 6 ,7,
+	//right
+	0, 1, 4,
+	1, 4, 5,
+	//top
+	0, 3, 4,
+	3, 4, 7,
+	//back
+	5, 4, 6,
+	4, 6, 7
+};
+glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(-1.5f, 0.0f, 0.0),
+	glm::vec3(1.5f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  1	,  0.0f),
+	glm::vec3(0.0f,  3	,  0.0f),
+	glm::vec3(0.0f,  4	,  0.0f),
+	glm::vec3(0.0f,  2	,  0.0f),
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  0.0f,  0.0f),
+};
+glm::mat4 projection;
+
+//glm::vec3 cameraPos = glm::vec3(0, 0, 3);
+//glm::vec3 cameraFront = glm::vec3(0, 0, -1);
+//glm::vec3 cameraUp = glm::vec3(0, 1, 0);
+
+
 
 
 void  setupVertexArrays(unsigned int& VAO, unsigned int& VBO, unsigned int& ElementBuffer) {
@@ -51,6 +90,7 @@ void  setupVertexArrays(unsigned int& VAO, unsigned int& VBO, unsigned int& Elem
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	//pos
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 }
@@ -108,6 +148,7 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, texture2);
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
+	glEnable(GL_DEPTH_TEST);
 
 	if (true) {
 		int width, height, nrChannels;
@@ -134,27 +175,74 @@ int main() {
 	setupVertexArrays(VAO, VBO, ElementBuffer);
 
 	shader.Use();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-	//trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
 
 	unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
-	float lastMeasureTime = glfwGetTime();
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0, 0, -3));
 
+	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+	shader.SetMatrix4x4("model", trans);
+	shader.SetMatrix4x4("view", view);
+	shader.SetMatrix4x4("projection", projection);
+
+
+	//define camera pos
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+	glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+	glm::mat4 testView;
+	glm::mat4 t = glm::mat4(
+		glm::vec4(cameraRight, 0),
+		glm::vec4(cameraUp, 0),
+		glm::vec4(cameraDirection, 0),
+		glm::vec4(0, 0, 0, 1));
+
+	glm::mat4 a = glm::mat4(
+		glm::vec4(1, 0, 0, -cameraPos.x),
+		glm::vec4(0, 1, 0, -cameraPos.y),
+		glm::vec4(0, 0, 1, -cameraPos.z),
+		glm::vec4(0, 0, 0, 1)
+	);
+	testView = transpose(t * a);
+
+	glm::mat4 Cameraview = glm::lookAt(cameraPos, cameraTarget, up);
+
+	if (testView == Cameraview) std::cout << "match\n";
+
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			std::cout << " " << testView[y][x];
+		}
+		std::cout << std::endl;
+	}
+	shader.SetMatrix4x4("view", testView);
+
+
+
+
+
+
+
+
+	float lastMeasureTime = glfwGetTime();
 	int frameCount = 0;
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
 		float time = glfwGetTime();
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f), glClear(GL_COLOR_BUFFER_BIT);
-		trans = glm::rotate(trans, glm::radians(1.0f), glm::vec3(0.0, 0.0, 1.0));
-		trans = glm::scale(trans, glm::vec3(1.0001));
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f), glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Use();
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
 		shader.SetInt("ourTexture1", 0);
 		shader.SetInt("ourTexture2", 1);
 
@@ -165,8 +253,25 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		shader.SetMatrix4x4("model", trans);
+		const float radius = 10.0f;
+		float camX = sin(glfwGetTime()) * radius;
+		float camZ = cos(glfwGetTime()) * radius;
+		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		shader.SetMatrix4x4("view", view);
+		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+
+		for (int i = 0; i < 1000; i++) {
+			glm::mat4 trans = glm::mat4(1.0f);
+			trans = glm::translate(trans, cubePositions[i % 10]);
+			trans = glm::rotate(trans, time * (i + 1), glm::vec3(i * .4 + 7.1 + time, i * .4 - .1, .1 * i));
+			//trans = glm::scale(trans, glm::vec3(.4));
+			shader.SetMatrix4x4("model", trans);
+			glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+		}
+
+		//glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+		//glBindVertexArray(0);
 
 
 		processInput(window);
@@ -203,4 +308,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	int size = width < height ? width : height;
 	std::cout << "WIDTH: " << width << " HEIGHT: " << height << " SIZE: " << size << std::endl;
 	glViewport(0, 0, size, size);
+	projection = glm::perspective(glm::radians(90.0f), (float)(size / size), 0.1f, 100.0f);
+
 }
