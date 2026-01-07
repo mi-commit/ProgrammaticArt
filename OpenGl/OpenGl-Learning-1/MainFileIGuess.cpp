@@ -20,19 +20,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
 
 
-glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  0.0f),
-	glm::vec3(-1.5f, 0.0f, 0.0),
-	glm::vec3(1.5f,  0.0f,  0.0f),
-	glm::vec3(0.0f,  1	,  0.0f),
-	glm::vec3(0.0f,  3	,  0.0f),
-	glm::vec3(0.0f,  4	,  0.0f),
-	glm::vec3(0.0f,  2	,  0.0f),
-	glm::vec3(0.0f,  0.0f,  0.0f),
-	glm::vec3(0.0f,  0.0f,  0.0f),
-	glm::vec3(0.0f,  0.0f,  0.0f),
-};
-
 
 
 Camera cam = Camera(glm::vec3(0, 0, 3), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
@@ -112,7 +99,7 @@ int main() {
 
 	//create shader program::
 	Shader shader(&cam, "SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
-	Model model(&shader);
+	Model model(&shader,vertices, std::size(vertices), indices, 36);
 	model.shader->Use();
 	model.shader->SetInt("ourTexture1", 0);
 	model.shader->SetInt("ourTexture2", 1);

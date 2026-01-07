@@ -80,7 +80,20 @@ public:
 		scale += amount;
 	}
 
-	Model(Shader* _shader) {
+	Model(Shader* _shader, float* vertecies, int _vertCount, uint32_t* _indexes, int _indexCount) {
+		verts = new float[_vertCount];
+		vertCount = _vertCount;
+		for (int i = 0; i < _vertCount; i++) {
+			verts[i] = vertecies[i];
+		}
+		indexCount = _indexCount;
+
+		indexes = new uint32_t[36];
+
+		for (int i = 0; i < 36; i++) {
+			indexes[i] = indices[i];
+		}
+
 		shader = _shader;
 		shader->Use();
 		shader->SetMatrix4x4("model", get_modelMatrix());
@@ -89,7 +102,10 @@ public:
 
 
 private:
-
+	int vertCount;
+	float* verts;
+	int indexCount;
+	uint32_t* indexes;
 
 	void  setupVertexArrays(unsigned int & VertexArrayElement) {
 
