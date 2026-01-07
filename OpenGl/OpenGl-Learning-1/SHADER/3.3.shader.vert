@@ -10,11 +10,12 @@ uniform mat4 projection;
 
 out vec3 VertexColor;
 out vec2 TexCoord;
+out vec3 pos;
 
 void main()
 {
-    gl_Position = transform * vec4(aPos, 1.0f);
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
+	pos = normalize(aPos);
 	VertexColor = Color;
 	TexCoord = aTexCoord;
 }

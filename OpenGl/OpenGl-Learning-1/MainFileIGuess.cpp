@@ -11,8 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
-#include "Camera.h"
+
+#include "src/Shader.h"
+#include "src/Camera.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -171,7 +172,7 @@ int main() {
 
 
 	//create shader program::
-	Shader shader("3.3.shader.vert", "3.3.shader.frag");
+	Shader shader("SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
 
 	unsigned int VBO;
 	unsigned int VAO, ElementBuffer;
