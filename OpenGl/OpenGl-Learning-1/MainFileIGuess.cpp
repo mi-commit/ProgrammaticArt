@@ -18,7 +18,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
-uint32_t initTexture(char* path);
+uint32_t initTexture(char* path, GLenum format);
 
 
 
@@ -31,7 +31,6 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 
 	GLFWwindow* window = glfwCreateWindow(800, 800, "TEST", NULL, NULL);
 
@@ -57,71 +56,32 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 
-
-	//texture
-	// TODO:: MOVE TO SOME OTHER CLASS!!
-	uint32_t texture, texture2;
-	texture = initTexture((char*)"IMG/wall.jpg\0");
-	texture2 = initTexture((char*)"IMG/awesomeface.png");
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// load image
-	if (true) {
-		int width, height, nrChannels;
-		unsigned char* textureData = stbi_load("IMG/wall.jpg\0", &width, &height, &nrChannels, 0);
-		if (textureData) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		else {
-			std::cout << "failed to load texture" << std::endl;
-		}
-		stbi_image_free(textureData);
-	}
-
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
 	glEnable(GL_DEPTH_TEST);
 
-	if (true) {
-		int width, height, nrChannels;
-		unsigned char* textureData = stbi_load("IMG/awesomeface.png", &width, &height, &nrChannels, 0);
-		if (textureData) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		else {
-			std::cout << "failed to load texture" << std::endl;
-		}
-		stbi_image_free(textureData);
-	}
-	
-
-	//create shader program::
-	Shader shader(&cam, "SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
-	Model model1(&shader,vertices, std::size(vertices), indices, std::size(indices));
-	model1.shader->Use();
-	model1.shader->SetInt("ourTexture1", 0);
-	model1.shader->SetInt("ourTexture2", 1);
-	Model model2(&shader, vertices, std::size(vertices), indices, std::size(indices));
 
 
-
+	//texture
+	uint32_t texture, texture2;
+	texture = initTexture((char*)"IMG/wall.jpg\0", GL_RGB);
+	texture2 = initTexture((char*)"IMG/awesomeface.png", GL_RGBA);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	
+
+	//create shader program::
+	Shader shader(&cam, "SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
+	Model model1(&shader,meshes::cube.vertices, std::size(meshes::cube.vertices), meshes::cube.indices, std::size(meshes::cube.indices));
+	model1.shader->Use();
+	model1.shader->SetInt("ourTexture1", 0);
+	model1.shader->SetInt("ourTexture2", 1);
 
 
 
 	float lastMeasureTime = glfwGetTime();
 	int frameCount = 0;
-
-
-
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
 		float time = glfwGetTime();
@@ -139,22 +99,19 @@ int main() {
 		model1.scale = glm::vec3(1, sin(time), 1);
 		model1.Draw();
 
-		model2.pos = glm::vec3(1,1,1);
-		model1.Rotate(.0001, glm::vec3(0, 1, 0));
-		model2.Draw();
 
 		processInput(window);
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 
-		//if (time - lastMeasureTime > 1) {
-		//	std::cout << "fps:  " << (frameCount) << std::endl;
-		//	frameCount = 0;
-		//	lastMeasureTime = time;
-		//}
-		//else {
-		//	frameCount++;
-		//}
+		if (time - lastMeasureTime > 1) {
+			std::cout << "fps:  " << (frameCount) << std::endl;
+			frameCount = 0;
+			lastMeasureTime = time;
+		}
+		else {
+			frameCount++;
+		}
 
 		delta_t = glfwGetTime()- time;
 	}
@@ -210,7 +167,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	cam.Turn(xoffset, yoffset);
 }
 
-uint32_t initTexture(char* path) {
+uint32_t initTexture(char* path, GLenum format) {
 	uint32_t textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -219,7 +176,7 @@ uint32_t initTexture(char* path) {
 		int width, height, nrChannels;
 		unsigned char* textureData = stbi_load(path, &width, &height, &nrChannels, 0);
 		if (textureData) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, textureData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else {

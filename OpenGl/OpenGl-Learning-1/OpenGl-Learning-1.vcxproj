@@ -145,15 +145,13 @@
     <ClCompile Include="STB.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="3.3.shader.frag" />
-    <Text Include="3.3.shader.vert">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SHADER\3.3.shader.frag" />
+    <None Include="SHADER\3.3.shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

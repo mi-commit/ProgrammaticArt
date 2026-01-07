@@ -7,39 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Shader.h"
-
-float vertices[] = {
-	 0.5f,  0.5f,-0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,			// top right
-	 0.5f, -0.5f,-0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,			// bottom right
-	-0.5f, -0.5f,-0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,			// bottom left
-	-0.5f,  0.5f,-0.5f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f,			// top left 
-
-	//pos					//color				uv
-	 0.5f,  0.5f, 0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,			// top right
-	 0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,			// bottom right
-	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,			// bottom left
-	-0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f			// top left 
-};
-unsigned int indices[] = {
-	//front face
-	0, 1, 3,   // first triangle
-	1, 2, 3,    // second triangle
-	//bottom
-	1, 2, 5,
-	2, 5, 6,
-	//left
-	2, 3 ,7,
-	2, 6 ,7,
-	//right
-	0, 1, 4,
-	1, 4, 5,
-	//top
-	0, 3, 4,
-	3, 4, 7,
-	//back
-	5, 4, 6,
-	4, 6, 7
-};
+#include <vector>
 
 class Model {
 public:
@@ -51,7 +19,7 @@ public:
 
 	uint32_t VertexArrayElement;
 
-	Shader*	  shader;
+	Shader* shader;
 	void Draw() {
 		shader->Use();
 		shader->SetMatrix4x4("model", get_modelMatrix());
@@ -86,7 +54,6 @@ public:
 		for (int i = 0; i < _vertCount; i++) {
 			verts[i] = vertecies[i];
 		}
-
 		indexCount = _indexCount;
 		indexes = new uint32_t[_indexCount];
 		for (int i = 0; i < _indexCount; i++) {
@@ -105,7 +72,7 @@ private:
 	int indexCount;
 	uint32_t* indexes;
 
-	void  setupVertexArrays(unsigned int & VertexArrayElement) {
+	void  setupVertexArrays(unsigned int& VertexArrayElement) {
 
 		unsigned int VBO, ElementBuffer;
 
@@ -117,11 +84,11 @@ private:
 		glBindVertexArray(VertexArrayElement);
 		// 2. copy our vertices array in a buffer for OpenGL to use
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertCount, verts, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertCount, verts, GL_STATIC_DRAW);
 
 		//copy index array into a element buffer for opengl
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indexCount, indexes, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indexCount, indexes, GL_STATIC_DRAW);
 
 		// 4. then set our vertex attributes pointers
 			//position attribute
@@ -135,3 +102,43 @@ private:
 	}
 
 };
+
+namespace meshes {
+	struct {
+
+		float vertices[64] = {
+	 0.5f,  0.5f,-0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,			// top right
+	 0.5f, -0.5f,-0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,			// bottom right
+	-0.5f, -0.5f,-0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,			// bottom left
+	-0.5f,  0.5f,-0.5f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f,			// top left 
+
+	//pos					//color				uv
+	 0.5f,  0.5f, 0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,			// top right
+	 0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,			// bottom right
+	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,			// bottom left
+	-0.5f,  0.5f, 0.5f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f			// top left 
+		};
+
+		uint32_t indices[36] = {
+			//front face
+			0, 1, 3,   // first triangle
+			1, 2, 3,    // second triangle
+			//bottom
+			1, 2, 5,
+			2, 5, 6,
+			//left
+			2, 3 ,7,
+			2, 6 ,7,
+			//right
+			0, 1, 4,
+			1, 4, 5,
+			//top
+			0, 3, 4,
+			3, 4, 7,
+			//back
+			5, 4, 6,
+			4, 6, 7
+		};
+	} cube;
+
+}

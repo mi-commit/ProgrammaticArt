@@ -58,7 +58,6 @@ public:
 		return mat_view;
 	}
 	void Move(Camera_Movement direction, float dt) {
-		std::cout << direction;
 		float velocity = speed * dt;
 		switch (direction) {
 		case FORWARD:
