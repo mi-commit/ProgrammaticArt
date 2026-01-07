@@ -3,12 +3,14 @@
 #define SHADER_H
 
 #include <glad/glad.h> // for opengl headers
-#include <GLFW/glfw3.h>
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 class Shader {
 public:
@@ -27,6 +29,12 @@ public:
 	}
 	void SetFloat(const std::string& name, float value) const {
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	}
+	void SetFloat4(const std::string& name, float x, float y, float z, float w) {
+		glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+	}
+	void SetMatrix4x4(const std::string& name, glm::mat4 matrix) {
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 private:
 	void Compile(unsigned int shader, const char* source) {
@@ -77,13 +85,22 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
 
-	unsigned int vertex, fragment;
-	vertex = glCreateShader(GL_VERTEX_SHADER);
-	fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	std::cout << "Compiling VertexShader\n";
-	Compile(vertex, vShaderCode);
+	Compile(vertexShader, vShaderCode);
 	std::cout << "Compiling FragmentShader\n";
-	Compile(fragment, fShaderCode);
+	Compile(fragmentShader, fShaderCode);
+
+	ID = glCreateProgram();
+
+	glAttachShader(ID, vertexShader);
+	glAttachShader(ID, fragmentShader);
+	glLinkProgram(ID);
+
+	glDeleteShader(vertexShader); glDeleteShader(vertexShader);
+
+
 
 }
 

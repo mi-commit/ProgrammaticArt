@@ -4,12 +4,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <Shader.h>
+
 #include <stb_image.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Shader.h"
+#include "Camera.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -61,12 +64,11 @@ glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
 };
 
-glm::vec3 cameraPos = glm::vec3(0, 0, 3);
-glm::vec3 cameraFront = glm::vec3(0, 0, -1);
-glm::vec3 cameraUp	= glm::vec3(0, 1, 0);
+
+
+Camera cam = Camera(glm::vec3(0, 0, 3), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
 
 float delta_t;
-
 
 
 void  setupVertexArrays(unsigned int& VAO, unsigned int& VBO, unsigned int& ElementBuffer) {
@@ -185,16 +187,15 @@ int main() {
 	shader.SetInt("ourTexture1", 0);
 	shader.SetInt("ourTexture2", 1);
 
+
+
+
+
 	glm::mat4 mat_Model = glm::mat4(1.0f);
 
-
-	glm::mat4 mat_projection;
-	mat_projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-	glm::mat4 mat_view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
 	shader.SetMatrix4x4("model",		mat_Model);
-	shader.SetMatrix4x4("view",			mat_view);
-	shader.SetMatrix4x4("projection",	mat_projection);
+	shader.SetMatrix4x4("view",			cam.mat_view);
+	shader.SetMatrix4x4("projection",	cam.mat_projection);
 
 
 
@@ -218,9 +219,7 @@ int main() {
 
 		glBindVertexArray(VAO);
 
-
-		glm::mat4 mat_view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		shader.SetMatrix4x4("view", mat_view);
+		shader.SetMatrix4x4("view", cam.get_viewMatrix());
 
 		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
@@ -228,12 +227,9 @@ int main() {
 			glm::mat4 trans = glm::mat4(1.0f);
 			trans = glm::translate(trans, cubePositions[i % 10]);
 			trans = glm::rotate(trans, time * (i + 1), glm::vec3(i * .4 + 7.1 + time, i * .4 - .1, .1 * i));
-			//mat_Model = glm::scale(mat_Model, glm::vec3(.4));
 			shader.SetMatrix4x4("model", trans);
 			glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 		}
-
-
 
 
 		processInput(window);
@@ -263,30 +259,27 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+
 	//camera movement
-	float cameraSpeed = 2* delta_t;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cameraPos += cameraSpeed * cameraFront;
+		cam.Move(FORWARD, delta_t);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cameraPos -= cameraSpeed * cameraFront;
+		cam.Move(BACKWARD, delta_t);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cameraPos += glm::normalize(glm::cross(cameraUp, cameraFront)) * cameraSpeed;
+		cam.Move(LEFT, delta_t);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cameraPos -= glm::normalize(glm::cross(cameraUp, cameraFront)) * cameraSpeed;
+		cam.Move(RIGHT, delta_t);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		cameraPos -= cameraUp * cameraSpeed;
+		cam.Move(DOWN, delta_t);
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		cameraPos += cameraUp * cameraSpeed;
+		cam.Move(UP, delta_t);
 	}
-
-
-
-
 }
 
 
@@ -300,30 +293,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 }
 float lastX = 400, lastY = 300;
-float pitch = 0.0f, yaw = -90.0f;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
 	lastX = xpos;
 	lastY = ypos;
-
-	const float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
-
+	cam.Turn(xoffset, yoffset);
 }
