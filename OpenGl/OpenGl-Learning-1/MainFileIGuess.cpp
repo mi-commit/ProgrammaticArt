@@ -18,7 +18,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
-
+uint32_t initTexture(char* path);
 
 
 
@@ -61,12 +61,14 @@ int main() {
 	//texture
 	// TODO:: MOVE TO SOME OTHER CLASS!!
 	uint32_t texture, texture2;
+	texture = initTexture((char*)"IMG/wall.jpg\0");
+	texture2 = initTexture((char*)"IMG/awesomeface.png");
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	// load image
 	if (true) {
 		int width, height, nrChannels;
-		unsigned char* textureData = stbi_load("IMG/wall.jpg", &width, &height, &nrChannels, 0);
+		unsigned char* textureData = stbi_load("IMG/wall.jpg\0", &width, &height, &nrChannels, 0);
 		if (textureData) {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
 			glGenerateMipmap(GL_TEXTURE_2D);
@@ -76,8 +78,7 @@ int main() {
 		}
 		stbi_image_free(textureData);
 	}
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
+
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
 	glEnable(GL_DEPTH_TEST);
@@ -94,7 +95,6 @@ int main() {
 		}
 		stbi_image_free(textureData);
 	}
-	
 	
 
 	//create shader program::
@@ -208,4 +208,24 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastX = xpos;
 	lastY = ypos;
 	cam.Turn(xoffset, yoffset);
+}
+
+uint32_t initTexture(char* path) {
+	uint32_t textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	// load image
+	if (true) {
+		int width, height, nrChannels;
+		unsigned char* textureData = stbi_load(path, &width, &height, &nrChannels, 0);
+		if (textureData) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else {
+			std::cout << "failed to load texture" << path << std::endl;
+		}
+		stbi_image_free(textureData);
+	}
+	return textureID;
 }
