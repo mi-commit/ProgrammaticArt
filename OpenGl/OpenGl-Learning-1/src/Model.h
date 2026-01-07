@@ -57,7 +57,7 @@ public:
 		shader->SetMatrix4x4("model", get_modelMatrix());
 
 		glBindVertexArray(VertexArrayElement);
-		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indexCount * sizeof(uint32_t), GL_UNSIGNED_INT, 0);
 	}
 	glm::mat4 get_modelMatrix() {
 		glm::mat4 modelMatrix = glm::mat4(1);
@@ -81,19 +81,17 @@ public:
 	}
 
 	Model(Shader* _shader, float* vertecies, int _vertCount, uint32_t* _indexes, int _indexCount) {
-		verts = new float[_vertCount];
 		vertCount = _vertCount;
+		verts = new float[_vertCount];
 		for (int i = 0; i < _vertCount; i++) {
 			verts[i] = vertecies[i];
 		}
+
 		indexCount = _indexCount;
-
-		indexes = new uint32_t[36];
-
-		for (int i = 0; i < 36; i++) {
-			indexes[i] = indices[i];
+		indexes = new uint32_t[_indexCount];
+		for (int i = 0; i < _indexCount; i++) {
+			indexes[i] = _indexes[i];
 		}
-
 		shader = _shader;
 		shader->Use();
 		shader->SetMatrix4x4("model", get_modelMatrix());
@@ -119,11 +117,11 @@ private:
 		glBindVertexArray(VertexArrayElement);
 		// 2. copy our vertices array in a buffer for OpenGL to use
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertCount, verts, GL_STATIC_DRAW);
 
 		//copy index array into a element buffer for opengl
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indexCount, indexes, GL_STATIC_DRAW);
 
 		// 4. then set our vertex attributes pointers
 			//position attribute

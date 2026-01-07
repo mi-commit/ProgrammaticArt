@@ -99,10 +99,13 @@ int main() {
 
 	//create shader program::
 	Shader shader(&cam, "SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
-	Model model(&shader,vertices, std::size(vertices), indices, 36);
-	model.shader->Use();
-	model.shader->SetInt("ourTexture1", 0);
-	model.shader->SetInt("ourTexture2", 1);
+	Model model1(&shader,vertices, std::size(vertices), indices, std::size(indices));
+	model1.shader->Use();
+	model1.shader->SetInt("ourTexture1", 0);
+	model1.shader->SetInt("ourTexture2", 1);
+	Model model2(&shader, vertices, std::size(vertices), indices, std::size(indices));
+
+
 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -132,9 +135,13 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		model.Rotate(0.1 * delta_t, glm::vec3(0, 1, 0));
-		model.scale = glm::vec3(1, sin(time), 1);
-		model.Draw();
+		model1.Rotate(0.1 * delta_t, glm::vec3(0, 1, 0));
+		model1.scale = glm::vec3(1, sin(time), 1);
+		model1.Draw();
+
+		model2.pos = glm::vec3(1,1,1);
+		model1.Rotate(.0001, glm::vec3(0, 1, 0));
+		model2.Draw();
 
 		processInput(window);
 		glfwPollEvents();
