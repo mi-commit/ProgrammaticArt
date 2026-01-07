@@ -3,6 +3,7 @@
 #include <glad/glad.h> // for opengl headers
 #include <iostream>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Shader.h"
@@ -42,25 +43,47 @@ unsigned int indices[] = {
 
 class Model {
 public:
-	glm::vec3 position;
-	glm::mat4 model_matrix;
+	glm::vec3 pos = glm::vec3(0);
+	glm::quat rot = glm::quat_cast(glm::mat4(1.0f));
+	glm::vec3 scale = glm::vec3(1);
+
+
+
 	uint32_t VertexArrayElement;
 
 	Shader*	  shader;
 	void Draw() {
 		shader->Use();
+		shader->SetMatrix4x4("model", get_modelMatrix());
 
 		glBindVertexArray(VertexArrayElement);
 		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 	}
+	glm::mat4 get_modelMatrix() {
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::scale(modelMatrix, scale);
+		modelMatrix = mat4_cast(normalize(rot)) * modelMatrix;
+		modelMatrix = glm::translate(modelMatrix, pos);
+
+		return modelMatrix;
+	}
+
+
+
+	void Move(glm::vec3 translation) {
+		pos += translation;
+	}
+	void Rotate(float amount, glm::vec3 axis) {
+		rot = glm::rotate(rot, amount, axis);
+	}
+	void Scale(glm::vec3 amount) {
+		scale += amount;
+	}
 
 	Model(Shader* _shader) {
 		shader = _shader;
-		model_matrix = glm::mat4(1.0f);
 		shader->Use();
-		shader->SetMatrix4x4("model", model_matrix);
-
-
+		shader->SetMatrix4x4("model", get_modelMatrix());
 		setupVertexArrays(VertexArrayElement);
 	}
 

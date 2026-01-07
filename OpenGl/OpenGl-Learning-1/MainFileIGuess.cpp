@@ -20,18 +20,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
 
 
-//glm::vec3 cubePositions[] = {
-//	glm::vec3(0.0f,  0.0f,  0.0f),
-//	glm::vec3(-1.5f, 0.0f, 0.0),
-//	glm::vec3(1.5f,  0.0f,  0.0f),
-//	glm::vec3(0.0f,  1	,  0.0f),
-//	glm::vec3(0.0f,  3	,  0.0f),
-//	glm::vec3(0.0f,  4	,  0.0f),
-//	glm::vec3(0.0f,  2	,  0.0f),
-//	glm::vec3(0.0f,  0.0f,  0.0f),
-//	glm::vec3(0.0f,  0.0f,  0.0f),
-//	glm::vec3(0.0f,  0.0f,  0.0f),
-//};
+glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(-1.5f, 0.0f, 0.0),
+	glm::vec3(1.5f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  1	,  0.0f),
+	glm::vec3(0.0f,  3	,  0.0f),
+	glm::vec3(0.0f,  4	,  0.0f),
+	glm::vec3(0.0f,  2	,  0.0f),
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  0.0f,  0.0f),
+};
 
 
 
@@ -112,19 +112,18 @@ int main() {
 
 	//create shader program::
 	Shader shader(&cam, "SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
-
-
-	shader.Use();
-	shader.SetMatrix4x4("model", glm::mat4(1.0f));
-	shader.SetInt("ourTexture1", 0);
-	shader.SetInt("ourTexture2", 1);
+	Model model(&shader);
+	model.shader->Use();
+	model.shader->SetInt("ourTexture1", 0);
+	model.shader->SetInt("ourTexture2", 1);
 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	Model model(&shader);
+
+	
 
 
 
@@ -146,18 +145,9 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
-
+		model.Rotate(0.1 * delta_t, glm::vec3(0, 1, 0));
+		model.scale = glm::vec3(1, sin(time), 1);
 		model.Draw();
-
-
-		//for (int i = 0; i < 1000; i++) {
-		//	glm::mat4 trans = glm::mat4(1.0f);
-		//	trans = glm::translate(trans, cubePositions[i % 10]);
-		//	trans = glm::rotate(trans, time * (i + 1), glm::vec3(i * .4 + 7.1 + time, i * .4 - .1, .1 * i));
-		//	shader.SetMatrix4x4("model", trans);
-		//	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-		//}
-
 
 		processInput(window);
 		glfwPollEvents();
