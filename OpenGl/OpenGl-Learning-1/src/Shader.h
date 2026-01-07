@@ -11,12 +11,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Camera.h"
 
 class Shader {
 public:
 	unsigned int ID;
-	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(Camera* _cam, const char* vertexPath, const char* fragmentPath);
 	void Use() {
+		SetMatrix4x4("view",		cam->get_viewMatrix());
+		SetMatrix4x4("projection",	cam->mat_projection);
+
+
 		glUseProgram(ID);
 	}
 	//utility functions for uniforms
@@ -37,6 +42,7 @@ public:
 		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 private:
+	Camera* cam;
 	void Compile(unsigned int shader, const char* source) {
 		glShaderSource(shader, 1, &source, NULL);
 		glCompileShader(shader);
@@ -54,7 +60,8 @@ private:
 
 
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+Shader::Shader(Camera* _cam, const char* vertexPath, const char* fragmentPath) {
+	cam = _cam;
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::ifstream vShaderFile;
@@ -99,9 +106,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glLinkProgram(ID);
 
 	glDeleteShader(vertexShader); glDeleteShader(vertexShader);
-
-
-
 }
 
 
