@@ -18,11 +18,11 @@ public:
 	unsigned int ID;
 	Shader(Camera* _cam, const char* vertexPath, const char* fragmentPath);
 	void Use() {
+		glUseProgram(ID);
 		SetMatrix4x4("view",		cam->get_viewMatrix());
 		SetMatrix4x4("projection",	cam->mat_projection);
 
 
-		glUseProgram(ID);
 	}
 	//utility functions for uniforms
 	void SetBool(const std::string& name, bool value) const {
@@ -41,6 +41,10 @@ public:
 	void SetMatrix4x4(const std::string& name, glm::mat4 matrix) {
 		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 	}
+	void SetVec3(const std::string& name, float x, float y, float z) {
+		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+	}
+
 private:
 	Camera* cam;
 	void Compile(unsigned int shader, const char* source) {

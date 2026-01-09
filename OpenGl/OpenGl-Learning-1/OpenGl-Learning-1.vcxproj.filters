@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Shader">
+      <UniqueIdentifier>{26cb54c3-b128-45a2-aedb-7e3238031a5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFileIGuess.cpp">
@@ -37,11 +40,23 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SHADER\3.3.shader.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="SHADER\3.3.shader.frag">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shader</Filter>
+    </None>
+    <None Include="SHADER\3.3.shader.vert">
+      <Filter>Resource Files\Shader</Filter>
+    </None>
+    <None Include="SHADER\LightSource_1.frag">
+      <Filter>Resource Files\Shader</Filter>
+    </None>
+    <None Include="SHADER\LightSource_1.vert">
+      <Filter>Resource Files\Shader</Filter>
+    </None>
+    <None Include="SHADER\LitObject_1.frag">
+      <Filter>Resource Files\Shader</Filter>
+    </None>
+    <None Include="SHADER\LitObject_1.vert">
+      <Filter>Resource Files\Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

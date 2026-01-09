@@ -60,23 +60,34 @@ int main() {
 
 
 
-	//texture
-	uint32_t texture, texture2;
-	texture = initTexture((char*)"IMG/wall.jpg\0", GL_RGB);
-	texture2 = initTexture((char*)"IMG/awesomeface.png", GL_RGBA);
+	////texture
+	//uint32_t texture, texture2;
+	//texture = initTexture((char*)"IMG/wall.jpg\0", GL_RGB);
+	//texture2 = initTexture((char*)"IMG/awesomeface.png", GL_RGBA);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
 	//create shader program::
-	Shader shader(&cam, "SHADER/3.3.shader.vert", "SHADER/3.3.shader.frag");
-	Model model1(&shader,meshes::cube.vertices, std::size(meshes::cube.vertices), meshes::cube.indices, std::size(meshes::cube.indices));
-	model1.shader->Use();
-	model1.shader->SetInt("ourTexture1", 0);
-	model1.shader->SetInt("ourTexture2", 1);
+	Shader objectShader(&cam, "SHADER/LitObject_1.vert", "SHADER/LitObject_1.frag");
+	Shader lightShader(&cam, "SHADER/LightSource_1.vert", "SHADER/LightSource_1.frag");
+
+	Model Object(&objectShader,meshes::cube.vertices, std::size(meshes::cube.vertices), meshes::cube.indices, std::size(meshes::cube.indices));
+	Model Light	(&lightShader, meshes::cube.vertices, std::size(meshes::cube.vertices), meshes::cube.indices, std::size(meshes::cube.indices));
+
+	objectShader.Use();
+	objectShader.SetVec3("objectColor", 0.9, 0.5, 0.3);
+	objectShader.SetVec3("lightColor", .3, .7, .1);
+
+
+
+	Light.Move(glm::vec3(4));
+	Light.scale = (glm::vec3(.2));
+
+
 
 
 
@@ -89,16 +100,10 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		Light.Draw();
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		model1.Rotate(0.1 * delta_t, glm::vec3(0, 1, 0));
-		model1.scale = glm::vec3(1, sin(time), 1);
-		model1.Draw();
-
+		Object.Draw();
 
 		processInput(window);
 		glfwPollEvents();
@@ -124,7 +129,6 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
-
 	//camera movement
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		cam.Move(FORWARD, delta_t);

@@ -59,9 +59,7 @@ public:
 		for (int i = 0; i < _indexCount; i++) {
 			indexes[i] = _indexes[i];
 		}
-		shader = _shader;
-		shader->Use();
-		shader->SetMatrix4x4("model", get_modelMatrix());
+		shader = _shader;;
 		setupVertexArrays(VertexArrayElement);
 	}
 
