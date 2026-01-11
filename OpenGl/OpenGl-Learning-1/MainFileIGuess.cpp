@@ -79,14 +79,21 @@ int main() {
 	Model Object(&objectShader,meshes::NormalCube.vertices, std::size(meshes::NormalCube.vertices), meshes::NormalCube.indices, std::size(meshes::NormalCube.indices));
 	Model Light(&lightShader, meshes::NormalCube.vertices, std::size(meshes::NormalCube.vertices), meshes::NormalCube.indices, std::size(meshes::NormalCube.indices));
 
+	Object.scale = glm::vec3(1);
+	Light.pos = (glm::vec3(1, 1.0f, 1));
+	Light.scale = (glm::vec3(.1));
+
 	objectShader.Use();
-	objectShader.SetVec3("objectColor", 0.9, 0.5, 0.3);
-	objectShader.SetVec3("lightColor", .3, .7, .1);
+	objectShader.SetVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+	objectShader.SetVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+	objectShader.SetVec3("material.specular", glm::vec3(0.5));
+	//objectShader.SetFloat("material.shininess", 32.0f);
 
 
+	objectShader.SetVec3("lightColor", 1.0, 1.0, 1.0);
+	objectShader.SetVec3("lightPos", Light.pos.x, Light.pos.y, Light.pos.z);
+	Object.shader->SetVec3("camPos", cam.position.x, cam.position.y, cam.position.z);
 
-	Light.Move(glm::vec3(4));
-	Light.scale = (glm::vec3(.2));
 
 
 
@@ -98,11 +105,16 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 		float time = glfwGetTime();
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0, 0, 0, 0.5f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		//Light.pos.x = sin(time);
+		//Light.pos.z = cos(time);
 		Light.Draw();
 
+		Object.Rotate(delta_t, glm::vec3(1, 0, 0));
+		Object.shader->Use();
+		Object.shader->SetVec3("lightPos", Light.pos.x, Light.pos.y, Light.pos.z);
+		Object.shader->SetVec3("camPos", cam.position.x, cam.position.y, cam.position.z);
 
 		Object.Draw();
 
