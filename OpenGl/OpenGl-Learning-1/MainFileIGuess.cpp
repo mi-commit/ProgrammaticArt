@@ -61,9 +61,9 @@ int main() {
 
 
 	////texture
-	uint32_t texture;
-	texture = initTexture((char*)"IMG/Crate-diffuse.png\0", GL_RGBA);
-	//texture2 = initTexture((char*)"IMG/awesomeface.png", GL_RGBA);
+	uint32_t tex_diffuse, tex_specular;
+	tex_diffuse = initTexture((char*)"IMG/Crate-diffuse.png\0", GL_RGBA);
+	tex_specular = initTexture((char*)"IMG/Crate-specular.png\0", GL_RGBA);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -85,8 +85,10 @@ int main() {
 
 	objectShader.Use();
 	objectShader.SetInt("material.diffuse", 0); // is a texture
+	objectShader.SetInt("material.specular", 1); // is a texture
+
 	objectShader.SetVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-	objectShader.SetVec3("material.specular", glm::vec3(0));
+	//objectShader.SetVec3("material.specular", glm::vec3(0));
 	objectShader.SetFloat("material.shininess", 32.0f);
 
 	objectShader.SetVec3("light.ambient", 0.2f, 0.2f, 0.2f);
@@ -117,7 +119,9 @@ int main() {
 		Object.shader->SetVec3("light.position", Light.pos.x, Light.pos.y, Light.pos.z);
 		Object.shader->SetVec3("camPos", cam.position.x, cam.position.y, cam.position.z);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, tex_diffuse);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, tex_specular);
 		Object.Draw();
 
 		processInput(window);
