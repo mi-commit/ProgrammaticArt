@@ -75,8 +75,9 @@ int main() {
 	Shader objectShader(&cam, "SHADER/LitObject_1.vert", "SHADER/LitObject_1.frag");
 	Shader lightShader(&cam, "SHADER/LightSource_1.vert", "SHADER/LightSource_1.frag");
 
-	Model Object(&objectShader,meshes::cube.vertices, std::size(meshes::cube.vertices), meshes::cube.indices, std::size(meshes::cube.indices));
-	Model Light	(&lightShader, meshes::cube.vertices, std::size(meshes::cube.vertices), meshes::cube.indices, std::size(meshes::cube.indices));
+	meshes::NormalCube.generate_indices();
+	Model Object(&objectShader,meshes::NormalCube.vertices, std::size(meshes::NormalCube.vertices), meshes::NormalCube.indices, std::size(meshes::NormalCube.indices));
+	Model Light(&lightShader, meshes::NormalCube.vertices, std::size(meshes::NormalCube.vertices), meshes::NormalCube.indices, std::size(meshes::NormalCube.indices));
 
 	objectShader.Use();
 	objectShader.SetVec3("objectColor", 0.9, 0.5, 0.3);
