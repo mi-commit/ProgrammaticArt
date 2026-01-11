@@ -87,7 +87,7 @@ int main() {
 	objectShader.SetVec3("material.ambient", 1.0f, 0.5f, 0.31f);
 	objectShader.SetVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
 	objectShader.SetVec3("material.specular", glm::vec3(0.5));
-	//objectShader.SetFloat("material.shininess", 32.0f);
+	objectShader.SetFloat("material.shininess", 32.0f);
 
 
 	objectShader.SetVec3("lightColor", 1.0, 1.0, 1.0);
