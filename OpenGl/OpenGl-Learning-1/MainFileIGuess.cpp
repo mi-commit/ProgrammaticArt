@@ -89,9 +89,10 @@ int main() {
 	objectShader.SetVec3("material.specular", glm::vec3(0.5));
 	objectShader.SetFloat("material.shininess", 32.0f);
 
+	objectShader.SetVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+	objectShader.SetVec3("light.diffuse", 0.5f, 0.5f, 0.5f); // darken diffuse light a bit
+	objectShader.SetVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
-	objectShader.SetVec3("lightColor", 1.0, 1.0, 1.0);
-	objectShader.SetVec3("lightPos", Light.pos.x, Light.pos.y, Light.pos.z);
 	Object.shader->SetVec3("camPos", cam.position.x, cam.position.y, cam.position.z);
 
 
@@ -113,7 +114,7 @@ int main() {
 
 		Object.Rotate(delta_t, glm::vec3(1, 0, 0));
 		Object.shader->Use();
-		Object.shader->SetVec3("lightPos", Light.pos.x, Light.pos.y, Light.pos.z);
+		Object.shader->SetVec3("light.position", Light.pos.x, Light.pos.y, Light.pos.z);
 		Object.shader->SetVec3("camPos", cam.position.x, cam.position.y, cam.position.z);
 
 		Object.Draw();
