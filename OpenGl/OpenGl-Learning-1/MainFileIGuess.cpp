@@ -114,7 +114,7 @@ int main() {
 		//Light.pos.z = cos(time);
 		Light.Draw();
 
-		Object.Rotate(delta_t, glm::vec3(1, 0, 0));
+		//Object.Rotate(delta_t, glm::vec3(1, 0, 0));
 		Object.shader->Use();
 		Object.shader->SetVec3("light.position", Light.pos.x, Light.pos.y, Light.pos.z);
 		Object.shader->SetVec3("camPos", cam.position.x, cam.position.y, cam.position.z);
@@ -122,11 +122,23 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, tex_diffuse);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, tex_specular);
+		Object.scale = glm::vec3(13,10,13);
+		Object.pos = glm::vec3(0, -5.5, 0);
 		Object.Draw();
+
+		Object.scale = glm::vec3(1);
+		for (int i = 0; i < 20; i++) {
+			Object.pos = glm::vec3(sin(i*2), 0, cos(i*2)) * 5.0f;
+			Object.Draw();
+		}
+		Light.pos = glm::vec3(sin(time), 1, cos(time))*5.0f;
+
+
 
 		processInput(window);
 		glfwPollEvents();
 		glfwSwapBuffers(window);
+
 
 		if (time - lastMeasureTime > 1) {
 			std::cout << "fps:  " << (frameCount) << std::endl;
